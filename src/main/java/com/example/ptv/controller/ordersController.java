@@ -26,18 +26,22 @@ public class ordersController {
 
 
     /**
+     * author:sh
      * param：name:订单名称;type:存放货物类型;start_time:开始存放日期;end_time:存放截至日期
      * return:订单生成情况
      * */
     @PostMapping("/add")
-    public Rest addOrder(@RequestParam("user_id") String user_id, @RequestParam("name") String name, @RequestParam("type") String type, @RequestParam("start_time")String start_time, @RequestParam("end_time")String end_time) throws ParseException {
+    public Rest addOrder(@RequestParam("user_id") String user_id, @RequestParam("name") String name, @RequestParam("num")String num ,@RequestParam("type") String type, @RequestParam("start_time")String start_time, @RequestParam("end_time")String end_time) throws ParseException {
 
 
         /**将接口传过来的String类型的日期转化为Date类型*/
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+        Double numOfItem = Double.valueOf(num);
         Date starttime = ft.parse(start_time);
         Date endtime = ft.parse(end_time);
+        Integer userId = Integer.valueOf(user_id);
 
-        return ordersserviceimp.addOrder(user_id, name, type, starttime, endtime);
+        return ordersserviceimp.addOrder(name, numOfItem, type, userId, starttime,endtime);
+
     }
 }

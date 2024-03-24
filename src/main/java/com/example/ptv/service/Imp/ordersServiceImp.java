@@ -1,6 +1,7 @@
 package com.example.ptv.service.Imp;
 
 
+import com.example.ptv.dao.itemDao;
 import com.example.ptv.dao.ordersDao;
 import com.example.ptv.service.ordersService;
 import com.example.ptv.utils.Code;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -20,19 +22,26 @@ import java.util.Date;
 public class ordersServiceImp implements ordersService {
 
     @Autowired
+    itemDao itemdao;
+    @Autowired
     ordersDao ordersdao;
 
-    public Rest addOrder(String user_id, String name, String itemtype, Date start_time, Date end_time){
+    public Rest addOrder(String itemName, Double numOfItem, String type, Integer userId, Date startTime, Date endTime){
 
-        if(name == null)
-            return new Rest(Code.rc400.getCode(), "订单名称不存在");
-        if(itemtype == null)
-            return new Rest(Code.rc400.getCode(), "货物类型不存在");
-        if(start_time == null || end_time == null)
-            return new Rest(Code.rc400.getCode(), "存放时间不存在");
+        /**将订单包含的货物放进item数据表，并获取该货物的id*/
+        itemdao.addItem(itemName, type, userId, endTime);
+        List<Integer> itemidList = itemdao.selectItemidByUserid(userId);
+        Integer itemId = itemidList.get(itemidList.size()-1);
 
-        ordersdao.addOrder(user_id, name, itemtype, start_time, end_time);
+        /**将订单信息放入info表，并获取id*/
+        ordersdao.addOrderInfo(itemId, numOfItem, startTime, endTime, userId);
+        List<Integer> infoIdList = ordersdao.selectIdByuserId(userId);
+        Integer oinfo_id = infoIdList.get(infoIdList.size()-1);
 
-        return new Rest(Code.rc200.getCode(), "订单生成成功");
+        /**最终将info_id及其他信息放入orders表*/
+        ordersdao.addOrder(oinfo_id, type);
+
+        return new Rest(Code.rc200.getCode(), "存放完成");
     }
+
 }

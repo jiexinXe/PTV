@@ -6,5 +6,5 @@ import java.util.Date;
 
 public interface ordersService {
 
-    public Rest addOrder(String user_id, String name, String itemtype, Date start_time, Date end_time);
+    public Rest addOrder(String itemName, Double numOfItem, String type, Integer userId, Date startTime, Date endTime);
 }

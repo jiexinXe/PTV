@@ -1,15 +1,13 @@
 package com.example.ptv.controller;
 
 import com.example.ptv.service.Imp.loginServiceImp;
-import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class loginController {
 
     @Autowired
@@ -20,7 +18,7 @@ public class loginController {
      * return: Rest类型对象，包含状态码与登录结果
      * */
     @PostMapping("/login")
-    public Rest checklogin(@RequestParam("userId") String userId, @RequestParam("passWord") String passWord){
+    public Rest checklogin(@RequestParam("username") String userId, @RequestParam("password") String passWord){
         return loginServiceimp.fchecklogin(userId, passWord);
     }
 
