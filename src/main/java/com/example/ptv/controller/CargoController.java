@@ -31,4 +31,6 @@ public class CargoController {
             return new Rest(Code.rc400.getCode(), "添加货物失败");
         }
     }
+
+
 }
