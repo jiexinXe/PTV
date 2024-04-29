@@ -4,6 +4,7 @@ package com.example.ptv.controller;
 import com.example.ptv.entity.Cargo;
 import com.example.ptv.service.CargoService;
 import com.example.ptv.utils.Code;
+import com.example.ptv.utils.PageUtils;
 import com.example.ptv.utils.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +72,17 @@ public class CargoController {
         Map<Object, Object> ans = new HashMap<>();
         ans.put("cargo", cargo);
         return new Rest(Code.rc200.getCode(), ans, "货物信息");
+    }
+
+    /**
+     * 分页查询接口
+     * params中传入页数和每页记录数(page,limit)
+     */
+    @RequestMapping("/list")
+    public Rest list(@RequestParam Map<String, Object> params){
+        PageUtils page = cargoService.queryPage(params);
+
+        return new Rest(Code.rc200.getCode(),page, "货物信息");
     }
 
 }
