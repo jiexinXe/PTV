@@ -12,6 +12,6 @@ import java.util.List;
 @Mapper
 public interface CargoDao extends BaseMapper<Cargo> {
 
-    @Select("SELECT * FROM `cargo` where user_id = #{userId}")
+    @Select("SELECT * FROM `cargo` where userid = #{userId}")
     List<Integer> selectCargoByUserid(@Param("userId")Integer userId);
 }

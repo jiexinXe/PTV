@@ -65,7 +65,7 @@ public class CargoServiceImp extends ServiceImpl<CargoDao, Cargo> implements Car
     @Override
     public Rest getCargoListByUserId(String userid) {
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
-        cargowrapper.eq("user_id", userid);
+        cargowrapper.eq("userid", userid);
         List<Cargo> cargolist = cargoDao.selectList(cargowrapper);
 
         Map<Object, Object> ans = new HashMap<>();
