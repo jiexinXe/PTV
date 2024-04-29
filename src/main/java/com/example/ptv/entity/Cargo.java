@@ -32,5 +32,5 @@ public class Cargo {
     Date enterTime;
     //入库位置
     String location;
-
+    Integer userid;
 }
