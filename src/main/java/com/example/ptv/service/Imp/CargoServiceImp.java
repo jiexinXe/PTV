@@ -39,7 +39,6 @@ public class CargoServiceImp implements CargoService {
         Integer num_new = cargo.getNum()-Integer.valueOf(num);
         cargo.setNum(num_new);
         cargoDao.update(cargo,cargowrapper);
-
         return new Rest(Code.rc200.getCode(),"成功提取");
     }
 
