@@ -27,7 +27,6 @@ public class CargoController {
 
     @PostMapping("/add")
     public Rest addCargo(@RequestBody Cargo cargo) {
-        System.out.println(cargo);
         boolean success = cargoService.addCargo(cargo);
         if (success) {
             return new Rest(Code.rc200.getCode(),"添加货物成功");
