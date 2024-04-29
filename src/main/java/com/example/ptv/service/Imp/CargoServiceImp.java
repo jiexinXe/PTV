@@ -1,14 +1,10 @@
 package com.example.ptv.service.Imp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.ptv.dao.CargoDao;
 import com.example.ptv.entity.Cargo;
 import com.example.ptv.service.CargoService;
 import com.example.ptv.utils.Code;
-import com.example.ptv.utils.PageUtils;
-import com.example.ptv.utils.Query;
 import com.example.ptv.utils.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 
-@Service("cargoService")
-public class CargoServiceImp extends ServiceImpl<CargoDao, Cargo> implements CargoService {
+@Service
+public class CargoServiceImp implements CargoService {
         @Autowired
         private CargoDao cargoDao;
 
@@ -71,17 +67,6 @@ public class CargoServiceImp extends ServiceImpl<CargoDao, Cargo> implements Car
         Map<Object, Object> ans = new HashMap<>();
         ans.put("CargoList", cargolist);
         return new Rest(Code.rc200.getCode(), ans,"货物列表");
-    }
-
-
-    @Override
-    public PageUtils queryPage(Map<String, Object> params) {
-        IPage<Cargo> page = this.page(
-                new Query<Cargo>().getPage(params),
-                new QueryWrapper()
-        );
-
-        return new PageUtils(page);
     }
 
 }

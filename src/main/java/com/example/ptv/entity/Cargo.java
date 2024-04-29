@@ -1,6 +1,4 @@
 package com.example.ptv.entity;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +17,6 @@ import java.util.Date;
 public class Cargo {
 
     //货物ID
-    @TableId(value = "cid",type = IdType.AUTO)
     Integer cid;
     //货物名称
     String name;
@@ -35,7 +32,5 @@ public class Cargo {
     Date enterTime;
     //入库位置
     String location;
-
-    Integer userId;
 
 }
