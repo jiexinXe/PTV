@@ -37,6 +37,10 @@ public class CargoServiceImp implements CargoService {
             return new Rest(Code.rc400.getCode(),"余量不足");
         System.out.println(cargo);
         Integer num_new = cargo.getNum()-Integer.valueOf(num);
+        if(num_new == 0){
+            cargoDao.delete(cargowrapper);
+            return new Rest(Code.rc200.getCode(), "成功提取，余量已用完");
+        }
         cargo.setNum(num_new);
         cargoDao.update(cargo,cargowrapper);
 
@@ -61,7 +65,7 @@ public class CargoServiceImp implements CargoService {
     @Override
     public Rest getCargoListByUserId(String userid) {
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
-        cargowrapper.eq("userId", userid);
+        cargowrapper.eq("userid", userid);
         List<Cargo> cargolist = cargoDao.selectList(cargowrapper);
 
         Map<Object, Object> ans = new HashMap<>();

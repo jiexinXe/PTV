@@ -32,5 +32,7 @@ public class Cargo {
     Date enterTime;
     //入库位置
     String location;
+    //存放该货物的用户的id
+    Integer userid;
 
 }
