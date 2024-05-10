@@ -1,27 +1,32 @@
-name: GitHub Action Demo
-on: [push]
+name: SpringBoot CI
+
+on:
+  push:
+    branches: [ work, main, release ]
+  pull_request:
+    branches: [ work, main, release ]
+
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
-    # copy git 仓库到虚拟机上
-    - name: 'Checkout codes'
-      uses: actions/checkout@v1
-    # 获取最新一条提交的git log  
-    - name: Get Git Log
-      id: git_log
-      uses: Edisonboy/latest-git-log-action@main
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
       with:
-        tag: origin/master
-    # 发送邮件    
-    - name: Send email
-      uses: dawidd6/action-send-mail@v3
+        java-version: 11
+        distribution: 'temurin'
+
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
       with:
-        server_address: smtp.qq.com
-        server_port: 465
-        username: ${{secrets.MAIL_USERNAME}}
-        password: ${{secrets.MAIL_PASSWORD}}
-        subject: Github Actions job result
-        to: ${{secrets.MAIL_TOUSERNAME}}
-        from: ${{secrets.MAIL_USERNAME}}
-        body: ${{github.repository}} push log : ${{steps.git_log.outputs.log}}
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Build with Maven
+      run: mvn clean install -DskipTests
+
+    - name: Run tests
+      run: mvn test
