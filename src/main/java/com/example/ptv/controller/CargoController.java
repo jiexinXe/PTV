@@ -6,6 +6,7 @@ import com.example.ptv.service.CargoService;
 import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -58,6 +59,7 @@ public class CargoController {
     /**
      * 获取某一个用户的所有货物
      * */
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/list/userid")
     public Rest getCargoListByUserId(@RequestParam("userid")String id){
         return cargoService.getCargoListByUserId(id);

@@ -1,5 +1,7 @@
 package com.example.ptv.service.Imp;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.ptv.dao.UserDao;
 import com.example.ptv.entity.User;
 import com.example.ptv.service.userService;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
-public class userServiceImp {
+public class userServiceImp extends ServiceImpl<UserDao, User>  implements userService{
     @Autowired
     private UserDao userDao;
 
@@ -20,6 +22,7 @@ public class userServiceImp {
      * return:Rest类型对象，包含状态码，Data部分是User类型的对象
      * 用于查询某一特定用户的详细信息
      * */
+    @Override
     public Rest getUserinfo(Integer userId) {
         User user = userDao.selectById(userId);
         if (user == null) {
@@ -53,6 +56,7 @@ public class userServiceImp {
      * return:Rest类型变量,包含状态码，Data部分是修改结果
      * 用于管理员修改用户信息
      * */
+    @Override
     public Rest changeUserinfo(String userId, String changeItem, Object changeVariable){
         Integer id = Integer.parseInt(userId);
         User user = userDao.selectById(userId);
@@ -97,6 +101,19 @@ public class userServiceImp {
     }
 
 
+    @Override
+    public User getByName(String username) {
+        UserDao usersDao = this.baseMapper;
+        User usersEntity = usersDao.selectOne(new QueryWrapper<User>().eq("username",username));
+        if(usersEntity==null){
+            return  null;
+        }else {
+
+            return usersEntity;
+        }
+
+
+    }
 
 
 //    /**

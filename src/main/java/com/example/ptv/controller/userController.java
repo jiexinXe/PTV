@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,7 @@ public class userController {
      * return:Rest类型对象，包含状态码，Data部分是User类型的对象
      * 用于查询某一特定用户的详细信息
      * */
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/getUserinfo/{userId}")
     public Rest getUserinfo(@PathVariable("userId") Integer userId){
         return userServiceimp.getUserinfo(userId);
