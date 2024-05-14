@@ -38,7 +38,15 @@ public class CargoServiceImp implements CargoService {
 
         System.out.println(cargo);
 
+
         Integer num_new = cargo.getNum()-Integer.parseInt(num);
+
+//        Integer num_new = cargo.getNum()-Integer.valueOf(num);
+        if(num_new == 0){
+            cargoDao.delete(cargowrapper);
+            return new Rest(Code.rc200.getCode(), "成功提取，余量已用完");
+        }
+
         cargo.setNum(num_new);
         if(num_new == 0){
             cargoDao.delete(cargowrapper);

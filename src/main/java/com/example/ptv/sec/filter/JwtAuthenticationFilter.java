@@ -48,12 +48,18 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
         //String jwt = request.getHeader(jwtUtils.getHeader());
         String jwt = request.getHeader("Authorization");
+
         if (StrUtil.isBlankOrUndefined(jwt)) {
             chain.doFilter(request, response);
             return;
         }
+        String jwtWithoutQuotes = jwt.replace("\"", "");
 
-        Claims claim = jwtUtils.getClaimByToken(jwt);
+
+        Claims claim = jwtUtils.getClaimByToken(jwtWithoutQuotes);
+
+
+
         if (claim == null) {
             System.out.println(jwt);
             throw new JwtException("token 异常");

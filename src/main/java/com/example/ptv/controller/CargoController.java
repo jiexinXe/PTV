@@ -34,7 +34,6 @@ public class CargoController {
             return new Rest(Code.rc400.getCode(), "添加货物失败");
         }
     }
-
     /**
      * 更新货物信息
      * 需要上流将cargo对象的数据以body的方式传过来
@@ -55,7 +54,6 @@ public class CargoController {
         System.out.println(cid);
         return cargoService.deleteCargo(cid,num);
     }
-
     /**
      * 获取某一个用户的所有货物
      * */
@@ -64,7 +62,6 @@ public class CargoController {
     public Rest getCargoListByUserId(@RequestParam("userid")String id){
         return cargoService.getCargoListByUserId(id);
     }
-
     @GetMapping("/one")
     public Rest getOneCargo(@RequestParam("cid")String cid){
 

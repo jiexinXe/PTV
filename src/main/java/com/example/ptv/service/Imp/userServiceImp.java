@@ -10,6 +10,7 @@ import com.example.ptv.utils.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -25,12 +26,34 @@ public class userServiceImp extends ServiceImpl<UserDao, User>  implements userS
     @Override
     public Rest getUserinfo(Integer userId) {
         User user = userDao.selectById(userId);
+        User currentUser = new User(); // 创建一个新的 User 对象
+        // 将 user 对象的属性赋值给 currentUser 对象
+        currentUser.setId(user.getId());
+        currentUser.setName(user.getName());
+        currentUser.setRole(user.getRole());
+        currentUser.setUsername(user.getUsername());
+        currentUser.setPassword(user.getPassword());
+        currentUser.setGender(user.getGender());
+        currentUser.setAddress(user.getAddress());
+        currentUser.setEmail(user.getEmail());
+        currentUser.setPhone(user.getPhone());
+        currentUser.setLastLogin(user.getLastLogin());
+
+
+        System.out.println(user);
+        Date currentDate = new Date();
+        // 设置 user 对象的 lastLogin 字段为当前时间
+        user.setLastLogin(currentDate);
+        userDao.updateById(user);
+
+
         if (user == null) {
             return new Rest(Code.rc400.getCode(), "获取失败");
         } else {
-            return new Rest(Code.rc200.getCode(), String.valueOf(user),"获取成功");
+            return new Rest(Code.rc200.getCode(), String.valueOf(currentUser),"获取成功");
         }
     }
+
 //    /**
 // * Param:userId:用户对应的id
 // * return:Rest类型对象，包含状态码和操作结果
