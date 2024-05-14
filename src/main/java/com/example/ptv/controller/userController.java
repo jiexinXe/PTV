@@ -46,7 +46,7 @@ public class userController {
      * return:Rest类型对象，包含状态码，Data部分是User类型的对象
      * 用于查询某一特定用户的详细信息
      * */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+
     @GetMapping("/getUserinfo/{userId}")
     public Rest getUserinfo(@PathVariable("userId") Integer userId){
         return userServiceimp.getUserinfo(userId);
@@ -66,6 +66,9 @@ public class userController {
         String userId = requestJson.get("userId").asText();
         String changeItem = requestJson.get("changeItem").asText();
         String changeVariableString = requestJson.get("changeVariable").asText();
+        System.out.println(userId);
+        System.out.println(changeItem);
+        System.out.println(changeVariableString);
         Map<String, Object> changeVariable = mapper.readValue(changeVariableString, new TypeReference<Map<String, Object>>(){});
 
         return userServiceimp.changeUserinfo(userId, changeItem, changeVariable);

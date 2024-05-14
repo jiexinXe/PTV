@@ -32,5 +32,11 @@ public class Cargo {
     Date enterTime;
     //入库位置
     String location;
+//<<<<<<< .merge_file_UQWEf4
     Integer userid;
+//=======
+    //存放该货物的用户的id
+//    Integer userid;
+//
+//>>>>>>> .merge_file_qji91F
 }
