@@ -9,12 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 这个类主要用于定义一些用户操作的请求
  * 例如，存放货物，取出货物等
  * */
-@Controller
+@RestController
 public class operationController {
 
 

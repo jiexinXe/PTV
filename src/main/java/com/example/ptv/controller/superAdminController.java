@@ -17,7 +17,7 @@ import java.sql.ClientInfoStatus;
  * */
 
 
-@Controller
+@RestController
 @RequestMapping("/superAdmin")
 public class superAdminController {
 

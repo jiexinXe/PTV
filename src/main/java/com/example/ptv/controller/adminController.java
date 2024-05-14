@@ -13,7 +13,7 @@ import com.example.ptv.service.adminService;
  * 方法中的WH均为Warehouse的缩写
  * */
 
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class adminController {
 
