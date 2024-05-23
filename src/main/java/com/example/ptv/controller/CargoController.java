@@ -57,7 +57,7 @@ public class CargoController {
     /**
      * 获取某一个用户的所有货物
      * */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
     @GetMapping("/list/userid")
     public Rest getCargoListByUserId(@RequestParam("userid")String id){
         return cargoService.getCargoListByUserId(id);
