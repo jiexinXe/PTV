@@ -45,7 +45,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/captcha",
             "/login",
             "/logout",
-            "/register"
+            "/register",
+            "/kafkaProducer/**",
+            "/kafkaConsumer/**",
     };
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -59,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        System.out.println("可惜不可惜忘了爱自己");
         http.cors().and().csrf().disable()
                 .formLogin()
                     .loginProcessingUrl("/login")

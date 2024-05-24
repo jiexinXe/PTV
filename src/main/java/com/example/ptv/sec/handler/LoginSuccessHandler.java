@@ -35,6 +35,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         ComUser user = (ComUser) authentication.getPrincipal();
+        System.out.println("再爱的勇气");
+        System.out.println(user);
+        System.out.println("可以还我了吗");
         String jwt = JwtUtils.generateToken(user);
         if (redisUtils.exists("login:" + user.getUserId())) {
             redisUtils.remove("login:" + user.getUserId());

@@ -49,6 +49,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         //String jwt = request.getHeader(jwtUtils.getHeader());
         String jwt = request.getHeader("Authorization");
 
+        System.out.println(jwt);
+
         if (StrUtil.isBlankOrUndefined(jwt)) {
             chain.doFilter(request, response);
             return;
@@ -61,7 +63,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
 
         if (claim == null) {
-            System.out.println(jwt);
+            System.out.println(jwtWithoutQuotes);
             throw new JwtException("token 异常");
         }
         if (jwtUtils.isTokenExpired(claim)) {

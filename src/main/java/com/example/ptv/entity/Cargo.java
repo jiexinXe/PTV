@@ -1,4 +1,6 @@
 package com.example.ptv.entity;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +19,7 @@ import java.util.Date;
 public class Cargo {
 
     //货物ID
+    @TableId(type = IdType.AUTO)
     Integer cid;
     //货物名称
     String name;
@@ -34,6 +37,10 @@ public class Cargo {
     String location;
 //<<<<<<< .merge_file_UQWEf4
     Integer userid;
+
+    //当前货物的状态
+    //未审核：0 ，已审核：1 ， 已上架：2
+    Integer status;
 //=======
     //存放该货物的用户的id
 //    Integer userid;

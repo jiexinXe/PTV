@@ -6,7 +6,10 @@ import com.example.ptv.entity.Cargo;
 import com.example.ptv.service.CargoService;
 import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,9 +21,18 @@ import java.util.Map;
 public class CargoServiceImp implements CargoService {
         @Autowired
         private CargoDao cargoDao;
+        @Autowired
+        private KafkaTemplate<String ,Object> kafkaTemplate;
+        @Autowired
+        private Gson gson = new GsonBuilder().create();
 
         public boolean addCargo(Cargo cargo) {
+            cargo.setStatus(0);
             int result = cargoDao.insert(cargo);
+            if(result > 0){
+                kafkaTemplate.send("test",gson.toJson(cargo.getCid()));
+            }
+
             return result > 0;
         }
     /**
