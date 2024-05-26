@@ -1,6 +1,8 @@
 package com.example.ptv.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,10 +15,11 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("oeders")
 public class orders {
-
+    @TableId(type = IdType.AUTO)
     Integer id;//订单自己的id
     Integer oinfoId;//订单对应的货物信息id
     String states;//订单状态，包括（进行中，完成，中止）
+    String type;
     Date opreationId;//订单产生的时间
 
 }

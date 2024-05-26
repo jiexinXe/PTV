@@ -30,7 +30,7 @@ public class CargoServiceImp implements CargoService {
             cargo.setStatus(0);
             int result = cargoDao.insert(cargo);
             if(result > 0){
-                kafkaTemplate.send("test",gson.toJson(cargo.getCid()));
+                kafkaTemplate.send("cargo-info",gson.toJson(cargo.getCid()));
             }
 
             return result > 0;

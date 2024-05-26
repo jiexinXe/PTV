@@ -1,0 +1,26 @@
+2024-04-29 17:38:27.648 [main] INFO  c.e.p.PtvApplication - [logStarting,55] - Starting PtvApplication using Java 1.8.0_402 on LAPTOP-RNM4VN4B with PID 35080 (E:\allwork\PTV\target\classes started by ada elon in E:\allwork\PTV)
+2024-04-29 17:38:27.650 [main] INFO  c.e.p.PtvApplication - [logStartupProfileInfo,645] - No active profile set, falling back to 1 default profile: "default"
+2024-04-29 17:38:28.385 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Initializing ProtocolHandler ["http-nio-8082"]
+2024-04-29 17:38:28.385 [main] INFO  o.a.c.c.StandardService - [log,173] - Starting service [Tomcat]
+2024-04-29 17:38:28.385 [main] INFO  o.a.c.c.StandardEngine - [log,173] - Starting Servlet engine: [Apache Tomcat/9.0.68]
+2024-04-29 17:38:28.515 [main] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring embedded WebApplicationContext
+2024-04-29 17:38:30.900 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Starting ProtocolHandler ["http-nio-8082"]
+2024-04-29 17:38:30.921 [main] INFO  c.e.p.PtvApplication - [logStarted,61] - Started PtvApplication in 3.607 seconds (JVM running for 5.49)
+2024-04-29 17:38:39.364 [http-nio-8082-exec-1] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-04-29 17:38:39.428 [http-nio-8082-exec-1] INFO  c.z.h.HikariDataSource - [getConnection,110] - defaultDataSource - Starting...
+2024-04-29 17:38:39.622 [http-nio-8082-exec-1] INFO  c.z.h.HikariDataSource - [getConnection,123] - defaultDataSource - Start completed.
+2024-04-29 17:40:21.209 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,350] - defaultDataSource - Shutdown initiated...
+2024-04-29 17:40:21.216 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,352] - defaultDataSource - Shutdown completed.
+2024-04-29 17:40:25.301 [main] INFO  c.e.p.PtvApplication - [logStarting,55] - Starting PtvApplication using Java 1.8.0_402 on LAPTOP-RNM4VN4B with PID 16032 (E:\allwork\PTV\target\classes started by ada elon in E:\allwork\PTV)
+2024-04-29 17:40:25.303 [main] INFO  c.e.p.PtvApplication - [logStartupProfileInfo,645] - No active profile set, falling back to 1 default profile: "default"
+2024-04-29 17:40:26.011 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Initializing ProtocolHandler ["http-nio-8082"]
+2024-04-29 17:40:26.012 [main] INFO  o.a.c.c.StandardService - [log,173] - Starting service [Tomcat]
+2024-04-29 17:40:26.012 [main] INFO  o.a.c.c.StandardEngine - [log,173] - Starting Servlet engine: [Apache Tomcat/9.0.68]
+2024-04-29 17:40:26.135 [main] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring embedded WebApplicationContext
+2024-04-29 17:40:28.473 [main] INFO  o.a.c.h.Http11NioProtocol - [log,173] - Starting ProtocolHandler ["http-nio-8082"]
+2024-04-29 17:40:28.493 [main] INFO  c.e.p.PtvApplication - [logStarted,61] - Started PtvApplication in 3.514 seconds (JVM running for 5.182)
+2024-04-29 17:40:36.568 [http-nio-8082-exec-1] INFO  o.a.c.c.C.[.[.[/] - [log,173] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-04-29 17:40:36.628 [http-nio-8082-exec-1] INFO  c.z.h.HikariDataSource - [getConnection,110] - defaultDataSource - Starting...
+2024-04-29 17:40:36.820 [http-nio-8082-exec-1] INFO  c.z.h.HikariDataSource - [getConnection,123] - defaultDataSource - Start completed.
+2024-04-29 17:42:21.110 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,350] - defaultDataSource - Shutdown initiated...
+2024-04-29 17:42:21.117 [SpringApplicationShutdownHook] INFO  c.z.h.HikariDataSource - [close,352] - defaultDataSource - Shutdown completed.

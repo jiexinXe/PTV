@@ -1,0 +1,2 @@
+2024-04-29 17:38:28.081 [main] DEBUG o.a.i.l.LogFactory - [setImplementation,109] - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+2024-04-29 17:40:25.712 [main] DEBUG o.a.i.l.LogFactory - [setImplementation,109] - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
