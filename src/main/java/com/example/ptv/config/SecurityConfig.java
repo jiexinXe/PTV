@@ -38,6 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+
+    //张凯歌大王在这里加了点东西
     public static final String[] URL_WHITELIST = {
             "/webjars/**",
             "/favicon.ico",
@@ -48,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/register",
             "/kafkaProducer/**",
             "/kafkaConsumer/**",
+            "car/test",
     };
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -7,4 +7,6 @@ import java.util.List;
 public interface CarService {
 
     List<Car> getAllCars();
+
+    public void processOrder(Integer orderId);
 }
