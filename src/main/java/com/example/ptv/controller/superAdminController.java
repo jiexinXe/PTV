@@ -76,6 +76,4 @@ public class superAdminController {
     public Rest deleteUser(@RequestParam("userId") String userId){
         return superAdminServiceimp.fdeleteUser(userId);
     }
-
-
 }

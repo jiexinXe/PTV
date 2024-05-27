@@ -25,8 +25,6 @@ public class KafkaProducerController {
 
     @GetMapping(value = "/sendMessage")
     public R sendMessage(){
-
-
         log.info("+++++++++++++++++++++  message = {}", gson.toJson("我是张凯歌大王"));
         kafkaTemplate.send("test",gson.toJson("我是张凯歌大王"));
         return  R.ok();

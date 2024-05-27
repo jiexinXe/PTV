@@ -26,8 +26,8 @@ public class CargoController {
     private CargoService cargoService;
 
     @PostMapping("/add")
-    public Rest addCargo(@RequestBody Cargo cargo) {
-        boolean success = cargoService.addCargo(cargo);
+    public Rest addCargo(@RequestBody Cargo cargo, @RequestParam("userid")String userid) {
+        boolean success = cargoService.addCargo(cargo, userid);
         if (success) {
             return new Rest(Code.rc200.getCode(),"添加货物成功");
         } else {
@@ -57,7 +57,7 @@ public class CargoController {
     /**
      * 获取某一个用户的所有货物
      * */
-    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
     @GetMapping("/list/userid")
     public Rest getCargoListByUserId(@RequestParam("userid")String id){
         return cargoService.getCargoListByUserId(id);

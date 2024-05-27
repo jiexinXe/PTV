@@ -5,7 +5,7 @@ import com.example.ptv.utils.Rest;
 
 public interface CargoService {
 
-    public boolean addCargo(Cargo cargo);
+    public boolean addCargo(Cargo cargo, String userid);
     public Rest deleteCargo(String cid, String num);
     public boolean updateCargo(Cargo cargo);
     public Cargo getCargoById(String cid);

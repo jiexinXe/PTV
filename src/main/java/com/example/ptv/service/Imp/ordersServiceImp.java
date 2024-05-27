@@ -71,6 +71,11 @@ public class ordersServiceImp implements ordersService {
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
         cargowrapper.eq("cid",cargoId);
         Cargo cargo = cargoDao.selectOne(cargowrapper);
+        /**订单创建过程中，货物状态改为1，意为货物审核中*/
+        cargo.setStatus(1);
+
+        cargoDao.updateById(cargo);
+
         orderInfo orderInfo = new orderInfo();
         orderInfo.setItemId(cargo.getCid());
         orderInfo.setNumOfItem( cargo.getNum());
@@ -88,10 +93,19 @@ public class ordersServiceImp implements ordersService {
         orders.setStates("已完成");
 
         /**最终将info_id及其他信息放入orders表*/
+        /**默认订单添加必然成功*/
         ordersdao.autoAddOrder(orders);
+
+        QueryWrapper<Cargo> cargowrapper_new = new QueryWrapper<>();
+        cargowrapper.eq("cid",cargoId);
+        Cargo cargo_new = cargoDao.selectOne(cargowrapper);
+        /**订单生成完成后货物状态改为审核完成*/
+        cargo_new.setStatus(2);
+        cargoDao.updateById(cargo_new);
 
         System.out.println(orders.getId());
         kafkaTemplate.send("order-created",gson.toJson(orders.getId()));
+
         return ;
     }
 }

@@ -2,12 +2,15 @@ package com.example.ptv.service.Imp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.ptv.dao.CargoDao;
+import com.example.ptv.dao.UserDao;
 import com.example.ptv.entity.Cargo;
+import com.example.ptv.entity.User;
 import com.example.ptv.service.CargoService;
 import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -25,9 +29,25 @@ public class CargoServiceImp implements CargoService {
         private KafkaTemplate<String ,Object> kafkaTemplate;
         @Autowired
         private Gson gson = new GsonBuilder().create();
+        @Autowired
+        private UserDao userdao;
 
-        public boolean addCargo(Cargo cargo) {
+        public boolean addCargo(Cargo cargo, String userid) {
             cargo.setStatus(0);
+
+            QueryWrapper<User> userwrapper = new QueryWrapper<>();
+            userwrapper.eq("id", userid);
+            User cargaoAdder = userdao.selectOne(userwrapper);
+
+            QueryWrapper<User> userwrappert = new QueryWrapper<>();
+            userwrapper.eq("id", cargo.getUserid());
+            User cargaoUser = userdao.selectOne(userwrapper);
+
+            if(!Objects.equals(cargaoAdder, cargaoUser)){
+                if(cargaoAdder.getRole() == 3)
+                    return false;
+            }
+
             int result = cargoDao.insert(cargo);
             if(result > 0){
                 kafkaTemplate.send("cargo-info",gson.toJson(cargo.getCid()));
