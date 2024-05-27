@@ -29,6 +29,7 @@ public class CargoController {
     public Rest addCargo(@RequestBody Cargo cargo, @RequestParam("userid")String userid) {
         boolean success = cargoService.addCargo(cargo, userid);
         if (success) {
+            System.out.println("这里是货物添加成功的输出值");
             return new Rest(Code.rc200.getCode(),"添加货物成功");
         } else {
             return new Rest(Code.rc400.getCode(), "添加货物失败");

@@ -32,29 +32,35 @@ public class CargoServiceImp implements CargoService {
         @Autowired
         private UserDao userdao;
 
-        public boolean addCargo(Cargo cargo, String userid) {
-            cargo.setStatus(0);
+    public boolean addCargo(Cargo cargo, String userid) {
+        cargo.setStatus(0);
 
-            QueryWrapper<User> userwrapper = new QueryWrapper<>();
-            userwrapper.eq("id", userid);
-            User cargaoAdder = userdao.selectOne(userwrapper);
+        // 创建查询包装器来查找货物添加者
+        QueryWrapper<User> adderWrapper = new QueryWrapper<>();
+        adderWrapper.eq("id", userid);
+        User cargoAdder = userdao.selectOne(adderWrapper);
 
-            QueryWrapper<User> userwrappert = new QueryWrapper<>();
-            userwrapper.eq("id", cargo.getUserid());
-            User cargaoUser = userdao.selectOne(userwrapper);
+        // 创建查询包装器来查找货物所属用户
+        QueryWrapper<User> userWrapper = new QueryWrapper<>();
+        userWrapper.eq("id", cargo.getUserid());
+        User cargoUser = userdao.selectOne(userWrapper);
 
-            if(!Objects.equals(cargaoAdder, cargaoUser)){
-                if(cargaoAdder.getRole() == 3)
-                    return false;
-            }
-
-            int result = cargoDao.insert(cargo);
-            if(result > 0){
-                kafkaTemplate.send("cargo-info",gson.toJson(cargo.getCid()));
-            }
-
-            return result > 0;
+        // 检查cargoAdder和cargoUser是否相同，如果不同且cargoAdder的角色为3，则返回false
+        if (!Objects.equals(cargoAdder, cargoUser)) {
+            if (cargoAdder.getRole() == 3)
+                return false;
         }
+
+        // 插入货物信息到数据库
+        int result = cargoDao.insert(cargo);
+        if (result > 0) {
+            // 发送货物信息到Kafka主题
+            kafkaTemplate.send("cargo-info", gson.toJson(cargo.getCid()));
+        }
+
+        return result > 0;
+    }
+
     /**
      * 提取货物
      * */
