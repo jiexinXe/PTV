@@ -24,4 +24,7 @@ public interface ordersDao {
     @Insert("INSERT INTO orders (oinfo_id, states) VALUES (#{oinfoId},  '已完成')")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void autoAddOrder(orders orders);
+
+    @Select("select * from orders where oinfo_id in (SELECT oinfo_id from order_info where user_id = #{userid})")
+    List<orders> getOrdersByUserid(@Param("userid")String userid);
 }

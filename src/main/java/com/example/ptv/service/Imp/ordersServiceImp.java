@@ -4,6 +4,7 @@ package com.example.ptv.service.Imp;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.ptv.dao.CargoDao;
 import com.example.ptv.dao.itemDao;
+import com.example.ptv.dao.orderinfoDao;
 import com.example.ptv.dao.ordersDao;
 import com.example.ptv.entity.Cargo;
 import com.example.ptv.entity.orderInfo;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +39,8 @@ public class ordersServiceImp implements ordersService {
     ordersDao ordersdao;
     @Autowired
     private CargoDao cargoDao;
+    @Autowired
+    private orderinfoDao infodao;
     @Autowired
     private KafkaTemplate<String ,Object> kafkaTemplate;
     @Autowired
@@ -108,4 +112,13 @@ public class ordersServiceImp implements ordersService {
 
         return ;
     }
+
+    @Override
+    public Rest getOrdersByuserid(String userid){
+        List<orders> ordersList = ordersdao.getOrdersByUserid(userid);
+        return new Rest(Code.rc200.getCode(), ordersList, "用户所有订单");
+
+
+    }
+
 }

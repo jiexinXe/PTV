@@ -4,10 +4,7 @@ package com.example.ptv.controller;
 import com.example.ptv.service.Imp.ordersServiceImp;
 import com.example.ptv.utils.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,6 +39,10 @@ public class ordersController {
         Integer userId = Integer.valueOf(user_id);
 
         return ordersserviceimp.addOrder(name, numOfItem, type, userId, starttime,endtime);
+    }
 
+    @GetMapping("/list")
+    public Rest getOrders(@RequestParam("userid")String userid){
+        return ordersserviceimp.getOrdersByuserid(userid);
     }
 }
