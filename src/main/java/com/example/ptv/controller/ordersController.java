@@ -45,4 +45,9 @@ public class ordersController {
     public Rest getOrders(@RequestParam("userid")String userid){
         return ordersserviceimp.getOrdersByuserid(userid);
     }
+
+    @PostMapping("/approve")
+    public Rest approveOrder(@RequestParam("oid")String oid){
+        return ordersserviceimp.approve(oid);
+    }
 }

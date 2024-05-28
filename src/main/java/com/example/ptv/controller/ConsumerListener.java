@@ -36,7 +36,7 @@ public class ConsumerListener {
             }
         }
     }
-    @KafkaListener(topics = "order-created")
+    @KafkaListener(topics = "order-approved")
     public void consumeMessageOrderCreated(ConsumerRecord<?,?> record) {
         Optional<?> kafkaMessage = Optional.ofNullable(record.value());
         if (kafkaMessage.isPresent()) {

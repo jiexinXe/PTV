@@ -95,7 +95,7 @@ public class ordersServiceImp implements ordersService {
         String type="do not why";
         orders orders = new orders();
         orders.setOinfoId(orderInfo.getId());
-        orders.setStates("已完成");
+        orders.setStates("待审批");
 
         /**最终将info_id及其他信息放入orders表*/
         /**默认订单添加必然成功*/
@@ -109,6 +109,7 @@ public class ordersServiceImp implements ordersService {
         cargoDao.updateById(cargo_new);
 
         System.out.println(orders.getId());
+        System.out.println("订单创建完成，但未审批");
         kafkaTemplate.send("order-created",gson.toJson(orders.getId()));
 
         return ;
@@ -120,4 +121,13 @@ public class ordersServiceImp implements ordersService {
         return new Rest(Code.rc200.getCode(), ordersList, "用户所有订单");
     }
 
+    @Override
+    public Rest approve(String oid){
+        orders orders = ordersdao.selectById(oid);
+        orders.setStates("已审核");
+        System.out.println("订单已经审批，准备召唤车车");
+        kafkaTemplate.send("order-approved",gson.toJson(orders.getId()));
+
+        return new Rest(Code.rc200.getCode(), "审批完成");
+    }
 }
