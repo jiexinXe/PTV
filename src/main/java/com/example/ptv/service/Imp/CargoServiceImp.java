@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 @Service
@@ -112,12 +109,20 @@ public class CargoServiceImp implements CargoService {
     @Override
     public Rest getCargoListByUserId(String userid) {
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
-        cargowrapper.eq("userid", userid);
-        List<Cargo> cargolist = cargoDao.selectList(cargowrapper);
-
+        User user = userdao.selectById(userid);
+        List<Cargo> cargolist;
+        //如果用户是普通用户则只能获取自己的货物信息
+        if(user.getRole() == 3) {
+            cargowrapper.eq("userid", userid);
+            cargolist = cargoDao.selectList(cargowrapper);
+            Map<Object, Object> ans = new HashMap<>();
+            ans.put("CargoList", cargolist);
+            return new Rest(Code.rc200.getCode(), ans,"普通用户货物列表");
+        }
+        cargolist = cargoDao.selectList(cargowrapper);
         Map<Object, Object> ans = new HashMap<>();
         ans.put("CargoList", cargolist);
-        return new Rest(Code.rc200.getCode(), ans,"货物列表");
-    }
+        return new Rest(Code.rc200.getCode(), ans,"管理员货物列表");
 
+    }
 }
