@@ -7,6 +7,7 @@ import com.example.ptv.dao.itemDao;
 import com.example.ptv.dao.orderinfoDao;
 import com.example.ptv.dao.ordersDao;
 import com.example.ptv.entity.Cargo;
+import com.example.ptv.entity.order_use;
 import com.example.ptv.entity.orderInfo;
 import com.example.ptv.entity.orders;
 import com.example.ptv.service.ordersService;
@@ -115,10 +116,8 @@ public class ordersServiceImp implements ordersService {
 
     @Override
     public Rest getOrdersByuserid(String userid){
-        List<orders> ordersList = ordersdao.getOrdersByUserid(userid);
+        List<order_use> ordersList = ordersdao.getOrdersByUserid(userid);
         return new Rest(Code.rc200.getCode(), ordersList, "用户所有订单");
-
-
     }
 
 }

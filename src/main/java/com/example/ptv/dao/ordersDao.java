@@ -2,6 +2,7 @@ package com.example.ptv.dao;
 
 
 import com.example.ptv.entity.orderInfo;
+import com.example.ptv.entity.order_use;
 import com.example.ptv.entity.orders;
 import org.apache.ibatis.annotations.*;
 
@@ -25,6 +26,6 @@ public interface ordersDao {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void autoAddOrder(orders orders);
 
-    @Select("select * from orders where oinfo_id in (SELECT oinfo_id from order_info where user_id = #{userid})")
-    List<orders> getOrdersByUserid(@Param("userid")String userid);
+    @Select("select DISTINCT id, states, name, type ,num_of_Item, start_time, end_time from orders, order_info, cargo where user_id = #{userid} and orders.oinfo_id = order_info.oinfo_id and cargo.cid = order_info.item_id")
+    List<order_use> getOrdersByUserid(@Param("userid")String userid);
 }
