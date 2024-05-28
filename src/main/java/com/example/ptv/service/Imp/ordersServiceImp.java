@@ -125,6 +125,7 @@ public class ordersServiceImp implements ordersService {
     public Rest approve(String oid){
         orders orders = ordersdao.selectById(oid);
         orders.setStates("已审核");
+        ordersdao.updateById(orders);
         System.out.println("订单已经审批，准备召唤车车");
         kafkaTemplate.send("order-approved",gson.toJson(orders.getId()));
 
