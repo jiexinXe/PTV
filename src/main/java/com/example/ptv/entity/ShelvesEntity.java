@@ -40,10 +40,6 @@ public class ShelvesEntity implements Serializable {
 	/**
 	 *
 	 * */
-	private String frontOrBack;
-	/**
-	 *
-	 * */
 	private String cargoId;
 	/**
 	 * 

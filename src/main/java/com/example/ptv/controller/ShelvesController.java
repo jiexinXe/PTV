@@ -102,7 +102,7 @@ public class ShelvesController {
     }
 
     @GetMapping("/cargo")
-    public Rest getCargoOfShelve(@RequestParam("shelve_id")String shelve_id){
-        return shelvesService.getCarogoOfShelve(shelve_id);
+    public Rest getCargoOfShelve(@RequestParam("warehouse_id")String warehouse_id, @RequestParam("shelve_id")String shelve_id, @RequestParam("row")String row, @RequestParam("column")String column){
+        return shelvesService.getCarogoOfShelve(warehouse_id, shelve_id, row, column);
     }
 }

@@ -20,6 +20,6 @@ public interface ShelvesService extends IService<ShelvesEntity> {
     public Rest addShelves(Integer num_of_row, Integer num_of_column, String warehouse_id);
     public Rest add();
     public Rest getInfo(String warehouse_id, String shelve_id);
-    public Rest getCarogoOfShelve(String shelve_id);
+    public Rest getCarogoOfShelve(String warehouse_id, String shelve_id, String row, String column);
 }
 

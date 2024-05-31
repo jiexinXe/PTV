@@ -53,16 +53,14 @@ public class ShelvesServiceImpl extends ServiceImpl<ShelvesDao, ShelvesEntity> i
     @Override
     public Rest add() {
         for (int n=1;n<=4;n++)
-            for (int a=0;a<=1;a++)
-                for(int i = 1;i<=10;i++)
-                    for(int j = 1;j<=10;j++) {
-                        ShelvesEntity shelves = new ShelvesEntity();
-                        shelves.setWarehouseId("1");
-                        shelves.setNumRow(String.valueOf(j));
-                        shelves.setNumColumn(String.valueOf(i));
-                        shelves.setFrontOrBack(String.valueOf(a));
-                        shelves.setShelveId(String.valueOf(n));
-                        shelvesdao.insert(shelves);
+            for(int i = 1;i<=10;i++)
+                for(int j = 1;j<=10;j++) {
+                    ShelvesEntity shelves = new ShelvesEntity();
+                    shelves.setWarehouseId("1");
+                    shelves.setNumRow(String.valueOf(j));
+                    shelves.setNumColumn(String.valueOf(i));
+                    shelves.setShelveId(String.valueOf(n));
+                    shelvesdao.insert(shelves);
                     }
         return new Rest(Code.rc200.getCode(), "货架添加成功");
     }
@@ -78,8 +76,13 @@ public class ShelvesServiceImpl extends ServiceImpl<ShelvesDao, ShelvesEntity> i
     }
 
     @Override
-    public Rest getCarogoOfShelve(String shelve_id) {
-        ShelvesEntity shelves = shelvesdao.selectById(shelve_id);
+    public Rest getCarogoOfShelve(String warehouse_id, String shelve_id, String row, String column) {
+        QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
+        shelveswrapper.eq("warehouse_id", warehouse_id)
+                .eq("shelve_id", shelve_id)
+                .eq("num_row", row)
+                .eq("num_column", column);
+        ShelvesEntity shelves = shelvesdao.selectOne(shelveswrapper);
         String cargo_id = shelves.getCargoId();
         Cargo cargo = cargodao.selectById(cargo_id);
 
