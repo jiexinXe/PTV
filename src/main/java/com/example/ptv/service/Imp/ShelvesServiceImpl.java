@@ -86,6 +86,8 @@ public class ShelvesServiceImpl extends ServiceImpl<ShelvesDao, ShelvesEntity> i
         String cargo_id = shelves.getCargoId();
         Cargo cargo = cargodao.selectById(cargo_id);
 
+        if(Objects.isNull(cargo))
+            return new Rest(Code.rc400.getCode(), "该位置没有货物或货物信息异常");
         return new Rest(Code.rc200.getCode(), cargo, "该货架的货物信息");
     }
 }
