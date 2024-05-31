@@ -28,14 +28,26 @@ public class ShelvesEntity implements Serializable {
 	/**
 	 * 
 	 */
-	private Integer layer;
+	private String shelveId;
+	/**
+	 *
+	 * */
+	private String numColumn;
 	/**
 	 * 
 	 */
-	private Integer location;
+	private String numRow;
+	/**
+	 *
+	 * */
+	private String frontOrBack;
+	/**
+	 *
+	 * */
+	private String cargoId;
 	/**
 	 * 
 	 */
-	private String states;
+	private String warehouseId;
 
 }

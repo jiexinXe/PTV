@@ -62,7 +62,6 @@ public class ConsumerListener {
             log.info("----------------- message =" + message);
 
         }
-
     }
 
 }

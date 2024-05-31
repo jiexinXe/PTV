@@ -7,15 +7,9 @@ import com.example.ptv.entity.ShelvesEntity;
 import com.example.ptv.service.ShelvesService;
 import com.example.ptv.utils.PageUtils;
 import com.example.ptv.utils.R;
+import com.example.ptv.utils.Rest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
-
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -87,4 +81,23 @@ public class ShelvesController {
         return R.ok();
     }
 
+    /**
+     * 添加
+     * */
+    @PostMapping("/add")
+    public Rest addShelves(@RequestParam("num_column")String num_column, @RequestParam("num_row")String num_row, @RequestParam("warehouse_id")String warehouse_id){
+        return shelvesService.addShelves(Integer.valueOf(num_column), Integer.valueOf(num_row), warehouse_id);
+    }
+
+    @GetMapping("/init")
+    public Rest initShelves(){
+        return shelvesService.add();
+    }
+    /**
+     * 根据仓库信息获取该仓库所有货架的信息
+     * */
+    @GetMapping("/info")
+    public Rest getShelvesOfWarehouse(@RequestParam("warehouse_id")String warehouse_id,@RequestParam("shelve_id")String shelve_id){
+        return shelvesService.getInfo(warehouse_id, shelve_id);
+    }
 }

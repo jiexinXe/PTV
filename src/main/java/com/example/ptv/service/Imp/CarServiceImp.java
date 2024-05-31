@@ -1,26 +1,34 @@
 package com.example.ptv.service.Imp;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.ptv.dao.CarDao;
+import com.example.ptv.dao.CargoDao;
+import com.example.ptv.dao.ShelvesDao;
 import com.example.ptv.dao.ordersDao;
-import com.example.ptv.entity.Car;
+import com.example.ptv.entity.*;
 import com.example.ptv.service.CarService;
+import com.example.ptv.utils.Rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CarServiceImp implements CarService {
 
     @Autowired
     private CarDao carDao;
-
-
+    @Autowired
+    ShelvesDao shelvesdao;
     @Autowired
     ordersDao ordersdao;
+    @Autowired
+    CargoDao cargodao;
 
     @Autowired
     private KafkaTemplate<String ,Object> kafkaTemplate;
@@ -72,11 +80,34 @@ public class CarServiceImp implements CarService {
             //处理完成
             carDao.updateCarStatusAndTask(firstCar.getId(), 0, "无");
             System.out.println("车车"+firstCar.getId()+"处理完毕！");
+            searchLocationInShelves(String.valueOf(orderId));
             kafkaTemplate.send("car-processing",gson.toJson(orderId));
         } else {
 
         }
     }
 
+    @Override
+    public Rest searchLocationInShelves(String order_id) {
+        String cargo_id = ordersdao.getCargoId(order_id);
+        System.out.println("订单对应货物id"+cargo_id);
+        Cargo cargo = cargodao.selectById(cargo_id);
+        String warehouse_id = cargo.getWarehouseId();
+        QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
+        shelveswrapper.eq("warehouse_id", warehouse_id);
+        //这里缺少一个挑选货架位置的策略
+        List<ShelvesEntity> shelvesList = shelvesdao.selectList(shelveswrapper);
+        Collections.reverse(shelvesList);
+        ShelvesEntity newlocation = new ShelvesEntity();
 
+        //遍历列表，获得第一个没有放货物的货架位置
+        for(ShelvesEntity se:shelvesList)
+            if(Objects.isNull(se.getCargoId()) || se.getCargoId().equals("0") || se.getCargoId().equals("-1"))
+                newlocation = se;
+        System.out.println("选取的货架位置是"+newlocation.getId());
+        newlocation.setCargoId(cargo_id);
+        shelvesdao.updateById(newlocation);
+
+        return null;
+    }
 }

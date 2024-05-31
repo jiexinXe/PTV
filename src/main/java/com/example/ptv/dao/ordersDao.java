@@ -29,4 +29,7 @@ public interface ordersDao extends BaseMapper<orders> {
 
     @Select("select DISTINCT id, states, name, type ,num_of_Item, start_time, end_time from orders, order_info, cargo where user_id = #{userid} and orders.oinfo_id = order_info.oinfo_id and cargo.cid = order_info.item_id")
     List<order_use> getOrdersByUserid(@Param("userid")String userid);
+
+    @Select("select item_id from order_info where oinfo_id = (select oinfo_id from orders where id = #{oid})")
+    String getCargoId(@Param("oid")String oid);
 }

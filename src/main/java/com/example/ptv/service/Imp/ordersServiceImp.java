@@ -71,7 +71,7 @@ public class ordersServiceImp implements ordersService {
      * @param cargoId
      */
     @Override
-    public void autoAddOrder(Integer cargoId){
+    public void autoAddOrder(Integer cargoId ){
 
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
         cargowrapper.eq("cid",cargoId);

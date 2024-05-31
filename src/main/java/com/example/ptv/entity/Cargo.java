@@ -21,6 +21,8 @@ public class Cargo {
     //货物ID
     @TableId(type = IdType.AUTO)
     Integer cid;
+    //货物所在仓库的id
+    String warehouseId;
     //货物名称
     String name;
     //货物种类
