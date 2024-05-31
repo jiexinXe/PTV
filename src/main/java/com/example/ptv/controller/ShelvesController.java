@@ -98,11 +98,13 @@ public class ShelvesController {
      * */
     @GetMapping("/info")
     public Rest getShelvesOfWarehouse(@RequestParam("warehouse_id")String warehouse_id,@RequestParam("shelve_id")String shelve_id){
+        System.out.println(shelvesService.getInfo(warehouse_id, shelve_id));
         return shelvesService.getInfo(warehouse_id, shelve_id);
     }
 
     @GetMapping("/cargo")
     public Rest getCargoOfShelve(@RequestParam("warehouse_id")String warehouse_id, @RequestParam("shelve_id")String shelve_id, @RequestParam("row")String row, @RequestParam("column")String column){
+        System.out.println(shelvesService.getCarogoOfShelve(warehouse_id, shelve_id, row, column));
         return shelvesService.getCarogoOfShelve(warehouse_id, shelve_id, row, column);
     }
 }
