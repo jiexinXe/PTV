@@ -1,7 +1,9 @@
 package com.example.ptv.service.Imp;
 
+import com.example.ptv.dao.CargoDao;
 import com.example.ptv.dao.ShelvesDao;
 import com.example.ptv.dao.warehouseDao;
+import com.example.ptv.entity.Cargo;
 import com.example.ptv.entity.ShelvesEntity;
 import com.example.ptv.entity.warehouse;
 import com.example.ptv.service.ShelvesService;
@@ -29,6 +31,8 @@ public class ShelvesServiceImpl extends ServiceImpl<ShelvesDao, ShelvesEntity> i
     @Autowired
     ShelvesDao shelvesdao;
     @Autowired
+    CargoDao cargodao;
+    @Autowired
     warehouseDao warehousedao;
 
     @Override
@@ -48,17 +52,18 @@ public class ShelvesServiceImpl extends ServiceImpl<ShelvesDao, ShelvesEntity> i
 
     @Override
     public Rest add() {
-        for (int a=0;a<=1;a++)
-            for(int i = 1;i<=20;i++)
-                for(int j = 1;j<=10;j++) {
-                    ShelvesEntity shelves = new ShelvesEntity();
-                    shelves.setWarehouseId("1");
-                    shelves.setNumRow(String.valueOf(j));
-                    shelves.setNumColumn(String.valueOf(i));
-                    shelves.setFrontOrBack(String.valueOf(a));
-
-                    shelvesdao.insert(shelves);
-                }
+        for (int n=1;n<=4;n++)
+            for (int a=0;a<=1;a++)
+                for(int i = 1;i<=10;i++)
+                    for(int j = 1;j<=10;j++) {
+                        ShelvesEntity shelves = new ShelvesEntity();
+                        shelves.setWarehouseId("1");
+                        shelves.setNumRow(String.valueOf(j));
+                        shelves.setNumColumn(String.valueOf(i));
+                        shelves.setFrontOrBack(String.valueOf(a));
+                        shelves.setShelveId(String.valueOf(n));
+                        shelvesdao.insert(shelves);
+                    }
         return new Rest(Code.rc200.getCode(), "货架添加成功");
     }
 
@@ -70,5 +75,14 @@ public class ShelvesServiceImpl extends ServiceImpl<ShelvesDao, ShelvesEntity> i
         List<ShelvesEntity> shelves = shelvesdao.selectList(shelveswrapper);
 
         return new Rest(Code.rc200.getCode(), shelves, "货架信息");
+    }
+
+    @Override
+    public Rest getCarogoOfShelve(String shelve_id) {
+        ShelvesEntity shelves = shelvesdao.selectById(shelve_id);
+        String cargo_id = shelves.getCargoId();
+        Cargo cargo = cargodao.selectById(cargo_id);
+
+        return new Rest(Code.rc200.getCode(), cargo, "该货架的货物信息");
     }
 }

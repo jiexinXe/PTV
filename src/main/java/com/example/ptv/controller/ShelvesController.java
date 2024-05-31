@@ -100,4 +100,9 @@ public class ShelvesController {
     public Rest getShelvesOfWarehouse(@RequestParam("warehouse_id")String warehouse_id,@RequestParam("shelve_id")String shelve_id){
         return shelvesService.getInfo(warehouse_id, shelve_id);
     }
+
+    @GetMapping("/cargo")
+    public Rest getCargoOfShelve(@RequestParam("shelve_id")String shelve_id){
+        return shelvesService.getCarogoOfShelve(shelve_id);
+    }
 }

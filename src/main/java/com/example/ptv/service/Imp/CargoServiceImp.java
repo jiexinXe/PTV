@@ -47,7 +47,7 @@ public class CargoServiceImp implements CargoService {
             if (cargoAdder.getRole() == 3)
                 return false;
         }
-
+        cargo.setWarehouseId("1");
         // 插入货物信息到数据库
         int result = cargoDao.insert(cargo);
         if (result > 0) {
