@@ -2,8 +2,10 @@ package com.example.ptv.service.Imp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.ptv.dao.CargoDao;
+import com.example.ptv.dao.ShelvesDao;
 import com.example.ptv.dao.UserDao;
 import com.example.ptv.entity.Cargo;
+import com.example.ptv.entity.ShelvesEntity;
 import com.example.ptv.entity.User;
 import com.example.ptv.service.CargoService;
 import com.example.ptv.utils.Code;
@@ -23,11 +25,16 @@ public class CargoServiceImp implements CargoService {
         @Autowired
         private CargoDao cargoDao;
         @Autowired
+        private ShelvesDao shelvesdao;
+        @Autowired
         private KafkaTemplate<String ,Object> kafkaTemplate;
         @Autowired
         private Gson gson = new GsonBuilder().create();
         @Autowired
         private UserDao userdao;
+
+        @Autowired
+        private CarServiceImp carserviceimp;
 
     public boolean addCargo(Cargo cargo, String userid) {
         cargo.setStatus(0);
@@ -65,8 +72,13 @@ public class CargoServiceImp implements CargoService {
     public Rest deleteCargo(String cid, String num) {
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
         cargowrapper.eq("cid", cid);
-
         Cargo cargo = cargoDao.selectOne(cargowrapper);
+
+        QueryWrapper<ShelvesEntity> shelvewrapper = new QueryWrapper<>();
+        shelvewrapper.eq("cargo_id", cid);
+        ShelvesEntity shelve = shelvesdao.selectOne(shelvewrapper);
+
+//        carserviceimp.processCargo(cid, String.valueOf(shelve.getId()));
 
         if(cargo.getNum() < Integer.valueOf(num))
             return new Rest(Code.rc400.getCode(),"余量不足");
@@ -74,19 +86,15 @@ public class CargoServiceImp implements CargoService {
         System.out.println(cargo);
 
 
-        Integer num_new = cargo.getNum()-Integer.parseInt(num);
-
-//        Integer num_new = cargo.getNum()-Integer.valueOf(num);
-        if(num_new == 0){
-            cargoDao.delete(cargowrapper);
-            return new Rest(Code.rc200.getCode(), "成功提取，余量已用完");
-        }
-
+        int num_new = cargo.getNum()-Integer.parseInt(num);
         cargo.setNum(num_new);
         if(num_new == 0){
             cargoDao.delete(cargowrapper);
+            shelve.setCargoId("0");
+            shelvesdao.updateById(shelve);
             return new Rest(Code.rc200.getCode(), "成功提取，余量已用完");
         }
+
         cargoDao.update(cargo,cargowrapper);
         return new Rest(Code.rc200.getCode(),"成功提取");
     }

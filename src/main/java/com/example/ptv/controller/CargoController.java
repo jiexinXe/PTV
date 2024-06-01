@@ -5,7 +5,10 @@ import com.example.ptv.entity.Cargo;
 import com.example.ptv.service.CargoService;
 import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +27,10 @@ import java.util.Map;
 public class CargoController {
     @Autowired
     private CargoService cargoService;
+    @Autowired
+    private KafkaTemplate<String ,Object> kafkaTemplate;
+    @Autowired
+    private Gson gson = new GsonBuilder().create();
 
     @PostMapping("/add")
     public Rest addCargo(@RequestBody Cargo cargo, @RequestParam("userid")String userid) {
@@ -53,8 +60,11 @@ public class CargoController {
      * */
     @DeleteMapping("/delete")
     public Rest deleteCargo(@RequestParam("id") String cid, @RequestParam("num")String num){
-        System.out.println(cid);
-        return cargoService.deleteCargo(cid,num);
+        String message = cid+";"+num;
+        System.out.println("提取货物开始");
+//        kafkaTemplate.send("cargo-remove", gson.toJson(message));
+        cargoService.deleteCargo(cid,num);
+        return new Rest(Code.rc200.getCode(), "指令执行中");
     }
     /**
      * 获取某一个用户的所有货物

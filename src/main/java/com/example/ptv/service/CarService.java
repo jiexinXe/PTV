@@ -11,4 +11,5 @@ public interface CarService {
 
     public void processOrder(Integer orderId);
     public Rest searchLocationInShelves(String order_id);
+    public void processCargo(String cid, String sid);
 }

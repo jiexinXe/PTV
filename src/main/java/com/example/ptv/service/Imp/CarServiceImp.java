@@ -110,4 +110,42 @@ public class CarServiceImp implements CarService {
 
         return null;
     }
+
+    @Override
+    public void processCargo(String cid, String sid) {
+        List<Car> cars = null;
+        int attempts = 0;
+
+        while (cars == null || cars.isEmpty()) {
+            cars = carDao.selectCarsByStatus(0);
+            if (cars != null && !cars.isEmpty()) {
+                break; // 如果cars不为空，则退出循环
+            }
+            attempts++;
+            if (attempts >= 5) { // 如果已尝试5次，则停止重试
+                break;
+            }
+            try {
+                Thread.sleep(3000); // 等待5秒
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // 恢复中断状态
+                break; // 在异常情况下退出循环
+            }
+        }
+
+        if (cars != null && !cars.isEmpty()) {
+            Car firstCar = cars.get(0); // 获取列表中的第一个Car对象
+            carDao.updateCarStatusAndTask(firstCar.getId(), 1, "当前正在前往货架"+sid);
+            System.out.println("车车"+firstCar.getId()+"来咯！ "+"正在前往货架: "+sid);
+            try {
+                Thread.sleep(3000); // 等待5秒
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // 恢复中断状态
+            }
+            System.out.println("车车"+firstCar.getId()+"正在提取货物: "+cid);
+            //处理完成
+            carDao.updateCarStatusAndTask(firstCar.getId(), 0, "无");
+            System.out.println("车车"+firstCar.getId()+"处理完毕！");
+        }
+    }
 }
