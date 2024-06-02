@@ -42,74 +42,137 @@ public class CarServiceImp implements CarService {
 
 
 
+    private final Object lock1 = new Object();
+    private final Object lock2 = new Object();
+    private final Object lock3 = new Object();
+    private final Object lock4 = new Object();
+
     //获取队列中的orderId，小车处理过程用sleep代替
     //选择当前为空闲状态的小车，status置为1，代表忙碌中，current_task设置为orderId
     //处理完后，向消息队列发送orderId
-    //货架位置？？？
     @Override
     public void processOrder(Integer orderId) {
-        List<Car> cars = null;
-        int attempts = 0;
+        new Thread(() -> {
+            List<Car> cars = null;
+            int attempts = 0;
 
-        while (cars == null || cars.isEmpty()) {
-            cars = carDao.selectCarsByStatus(0);
+            while (cars == null || cars.isEmpty()) {
+                cars = carDao.selectCarsByStatus(0);
+                if (cars != null && !cars.isEmpty()) {
+                    break; // 如果cars不为空，则退出循环
+                }
+                attempts++;
+                if (attempts >= 5) { // 如果已尝试5次，则停止重试
+                    break;
+                }
+                try {
+                    Thread.sleep(3000); // 等待5秒
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // 恢复中断状态
+                    break; // 在异常情况下退出循环
+                }
+            }
+
             if (cars != null && !cars.isEmpty()) {
-                break; // 如果cars不为空，则退出循环
+                Car firstCar = cars.get(0); // 获取列表中的第一个Car对象
+                carDao.updateCarStatusAndTask(firstCar.getId(), 1, "当前正在处理订单" + orderId);
+                System.out.println("车车" + firstCar.getId() + "来咯！ 正在处理订单: " + orderId);
+                try {
+                    Thread.sleep(3000); // 等待5秒
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // 恢复中断状态
+                }
+                // 订单处理
+                int storeAttempts = 0;
+                while (!storeCargoForOrder(orderId)) {
+                    storeAttempts++;
+                    if (storeAttempts >= 10) {
+                        System.out.println("存储失败：无法在任何货架上存储订单 " + orderId + " 的货物。");
+                        break;
+                    }
+                    try {
+                        Thread.sleep(3000); // 等待3秒后重试
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt(); // 恢复中断状态
+                        break; // 在异常情况下退出循环
+                    }
+                }
+                carDao.updateCarStatusAndTask(firstCar.getId(), 0, "无");
+                System.out.println("车车" + firstCar.getId() + "处理完毕！");
+                kafkaTemplate.send("car-processing", gson.toJson(orderId));
+            } else {
+                System.out.println("没有可用的车来处理订单: " + orderId);
             }
-            attempts++;
-            if (attempts >= 5) { // 如果已尝试5次，则停止重试
-                break;
-            }
-            try {
-                Thread.sleep(3000); // 等待5秒
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // 恢复中断状态
-                break; // 在异常情况下退出循环
-            }
-        }
-
-        if (cars != null && !cars.isEmpty()) {
-            Car firstCar = cars.get(0); // 获取列表中的第一个Car对象
-            carDao.updateCarStatusAndTask(firstCar.getId(), 1, "当前正在处理订单" + orderId);
-            System.out.println("车车"+firstCar.getId()+"来咯！ "+"正在处理订单: " +orderId);
-            try {
-                Thread.sleep(3000); // 等待5秒
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // 恢复中断状态
-            }
-            //处理完成
-            carDao.updateCarStatusAndTask(firstCar.getId(), 0, "无");
-            System.out.println("车车"+firstCar.getId()+"处理完毕！");
-            searchLocationInShelves(String.valueOf(orderId));
-            kafkaTemplate.send("car-processing",gson.toJson(orderId));
-        } else {
-
-        }
+        }).start();
     }
 
-    @Override
-    public Rest searchLocationInShelves(String order_id) {
-        String cargo_id = ordersdao.getCargoId(order_id);
-        System.out.println("订单对应货物id"+cargo_id);
+    private boolean storeCargoForOrder(Integer orderId) {
+        String cargo_id = ordersdao.getCargoId(orderId.toString());
+        System.out.println("订单对应货物id" + cargo_id);
         Cargo cargo = cargodao.selectById(cargo_id);
+
+        // 获取货物数量
+        int num = cargo.getNum();
+        // 获取货物所属仓库ID
         String warehouse_id = cargo.getWarehouseId();
-        QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
-        shelveswrapper.eq("warehouse_id", warehouse_id);
-        //这里缺少一个挑选货架位置的策略
-        List<ShelvesEntity> shelvesList = shelvesdao.selectList(shelveswrapper);
-        Collections.reverse(shelvesList);
-        ShelvesEntity newlocation = new ShelvesEntity();
 
-        //遍历列表，获得第一个没有放货物的货架位置
-        for(ShelvesEntity se:shelvesList)
-            if(Objects.isNull(se.getCargoId()) || se.getCargoId().equals("0") || se.getCargoId().equals("-1"))
-                newlocation = se;
-        System.out.println("选取的货架位置是"+newlocation.getId());
-        newlocation.setCargoId(cargo_id);
-        shelvesdao.updateById(newlocation);
+        boolean allShelvesFull = true;
 
-        return null;
+        // 遍历货架ID（货架ID为1, 2, 3, 4）
+        for (int shelveId = 1; shelveId <= 4; shelveId++) {
+            boolean success = false;
+            switch (shelveId) {
+                case 1:
+                    synchronized (lock1) {
+                        success = storeCargoInShelf(warehouse_id, shelveId, cargo_id, num);
+                    }
+                    break;
+                case 2:
+                    synchronized (lock2) {
+                        success = storeCargoInShelf(warehouse_id, shelveId, cargo_id, num);
+                    }
+                    break;
+                case 3:
+                    synchronized (lock3) {
+                        success = storeCargoInShelf(warehouse_id, shelveId, cargo_id, num);
+                    }
+                    break;
+                case 4:
+                    synchronized (lock4) {
+                        success = storeCargoInShelf(warehouse_id, shelveId, cargo_id, num);
+                    }
+                    break;
+            }
+            if (success) {
+                allShelvesFull = false;
+                break; // 成功存储后退出循环
+            }
+        }
+
+        return !allShelvesFull;
     }
+
+    private boolean storeCargoInShelf(String warehouse_id, int shelveId, String cargo_id, int num) {
+        QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
+        shelveswrapper.eq("warehouse_id", warehouse_id)
+                .eq("shelve_id", String.valueOf(shelveId))
+                .isNull("cargo_id");
+        List<ShelvesEntity> shelvesList = shelvesdao.selectList(shelveswrapper);
+        System.out.println("检查货架 " + shelveId);
+        // 遍历当前货架
+        for (ShelvesEntity shelf : shelvesList) {
+            shelf.setCargoId(cargo_id);
+            shelvesdao.updateById(shelf);
+            num--;
+            // 如果货物数量为0，则返回
+            if (num == 0) {
+                System.out.println("货物已全部存储");
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public void processCargo(String cid, String sid) {
