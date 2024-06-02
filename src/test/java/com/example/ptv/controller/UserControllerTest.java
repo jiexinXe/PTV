@@ -1,21 +1,20 @@
 package com.example.ptv.controller;
 
+import com.example.ptv.entity.User;
 import com.example.ptv.service.Imp.userServiceImp;
-import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,58 +24,53 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 class UserControllerTest {
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    private MockMvc mockMvc;
-
     @MockBean
     private userServiceImp userServiceimp;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private MockMvc mockMvc;
+
+    @InjectMocks
+    private userController userController;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void getUserinfo() throws Exception {
-        Rest rest = new Rest(Code.rc200.getCode(), "User Info");
-
-        when(userServiceimp.getUserinfo(eq(1))).thenReturn(rest);
+        User user = new User();
+        user.setId(1);
+        user.setName("testUser");
+        Rest rest = new Rest(200, user, "获取成功");
+        when(userServiceimp.getUserinfo(1)).thenReturn(rest);
 
         mockMvc.perform(get("/user/getUserinfo/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.Code").value(Code.rc200.getCode()))
-                .andExpect(jsonPath("$.msg").value("User Info"));
+                .andExpect(jsonPath("$.code", is(200)))
+                .andExpect(jsonPath("$.data.id", is(1)))
+                .andExpect(jsonPath("$.data.name", is("testUser")))
+                .andExpect(jsonPath("$.msg", is("获取成功")));
     }
 
     @Test
     void changeUserinfo() throws Exception {
-        Rest rest = new Rest(Code.rc200.getCode(), "User Info Changed");
+        Rest rest = new Rest(200, "修改成功");
+        when(userServiceimp.changeUserinfo(eq("1"), eq("profile"), any(Map.class))).thenReturn(rest);
 
-        when(userServiceimp.changeUserinfo(any(String.class), any(String.class), any(Map.class))).thenReturn(rest);
-
-        Map<String, Object> changeVariable = new HashMap<>();
-        changeVariable.put("address", "newAddress");
-
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("userId", "1");
-        requestBody.put("changeItem", "address");
-        requestBody.put("changeVariable", objectMapper.writeValueAsString(changeVariable));
+        String requestBody = "{ \"userId\": \"1\", \"changeItem\": \"profile\", \"changeVariable\": \"{ \\\"name\\\": \\\"newName\\\" }\" }";
 
         mockMvc.perform(post("/user/changeUserinfo")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(requestBody)))
+                        .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.Code").value(Code.rc200.getCode()))
-                .andExpect(jsonPath("$.msg").value("User Info Changed"));
+                .andExpect(jsonPath("$.code", is(200)))
+                .andExpect(jsonPath("$.msg", is("修改成功")));
     }
 }

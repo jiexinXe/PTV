@@ -64,7 +64,7 @@ public class CargoController {
         System.out.println("提取货物开始");
 //        kafkaTemplate.send("cargo-remove", gson.toJson(message));
         cargoService.deleteCargo(cid,num);
-        return new Rest(Code.rc200.getCode(), "指令执行中");
+        return new Rest(Code.rc200.getCode(), "删除成功");
     }
     /**
      * 获取某一个用户的所有货物

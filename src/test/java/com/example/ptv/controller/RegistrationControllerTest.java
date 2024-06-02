@@ -4,63 +4,72 @@ import com.example.ptv.service.RegistrationService;
 import com.example.ptv.utils.R;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 class RegistrationControllerTest {
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+    @MockBean
+    private RegistrationService registrationService;
 
     private MockMvc mockMvc;
 
-    @MockBean
-    private RegistrationService registrationService;
+    @InjectMocks
+    private RegistrationController registrationController;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(registrationController).build();
     }
 
     @Test
-    void registerUserSuccess() throws Exception {
-        when(registrationService.registerUser(any(Map.class))).thenReturn(true);
+    void list_whenRegistrationSuccess() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "testUser");
+        params.put("password", "testPassword");
+
+        when(registrationService.registerUser(params)).thenReturn(true);
 
         mockMvc.perform(post("/register")
-                        .param("username", "testuser")
-                        .param("password", "testpass"))
+                        .param("username", "testUser")
+                        .param("password", "testPassword"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("注册成功"))
-                .andExpect(jsonPath("$.code").value(0))
-                .andExpect(jsonPath("$.msg").value("success"));
+                .andExpect(jsonPath("$.code", is(0)))
+                .andExpect(jsonPath("$.msg", is("success")))
+                .andExpect(jsonPath("$.result", is("注册成功")));
     }
 
     @Test
-    void registerUserFailure() throws Exception {
-        when(registrationService.registerUser(any(Map.class))).thenReturn(false);
+    void list_whenRegistrationFails() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", "testUser");
+        params.put("password", "testPassword");
+
+        when(registrationService.registerUser(params)).thenReturn(false);
 
         mockMvc.perform(post("/register")
-                        .param("username", "testuser")
-                        .param("password", "testpass"))
+                        .param("username", "testUser")
+                        .param("password", "testPassword"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("注册失败"))
-                .andExpect(jsonPath("$.code").value(500))
-                .andExpect(jsonPath("$.msg").value("未知异常，请联系管理员"));
+                .andExpect(jsonPath("$.code", is(500)))
+                .andExpect(jsonPath("$.msg", is("未知异常，请联系管理员")))
+                .andExpect(jsonPath("$.result", is("注册失败")));
     }
 }
