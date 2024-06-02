@@ -1,5 +1,8 @@
 package com.example.ptv.controller;
 
+import cn.hutool.db.sql.Order;
+import com.example.ptv.dao.ordersDao;
+import com.example.ptv.entity.orders;
 import com.example.ptv.service.CarService;
 import com.example.ptv.service.CargoService;
 import com.example.ptv.service.Imp.CargoServiceImp;
@@ -27,6 +30,8 @@ public class ConsumerListener {
     private ordersService ordersservice;
     @Autowired
     private CargoService cargoservice;
+    @Autowired
+    private ordersDao orderdao;
 
     @Autowired
     private CarService carService;
@@ -56,6 +61,9 @@ public class ConsumerListener {
             log.info("----------------- message =" + message);
             try {
                 Integer orderId = Integer.valueOf(message.toString());
+                orders order = orderdao.selectById(String.valueOf(orderId));
+                order.setStates("运输中");
+                orderdao.updateById(order);
                 carService.processOrder(orderId);
             } catch (NumberFormatException e) {
                 log.error("Failed to convert message to Integer: " + message, e);

@@ -80,6 +80,15 @@ public class CarServiceImp implements CarService {
             //处理完成
             carDao.updateCarStatusAndTask(firstCar.getId(), 0, "无");
             System.out.println("车车"+firstCar.getId()+"处理完毕！");
+
+            //改变货物状态为4，意为运输完成
+            // 因为没有货架运输，因此直接设置现在为运输完成
+            String cid = ordersdao.getCargoId(String.valueOf(orderId));
+            Cargo cargo = cargodao.selectById(cid);
+            cargo.setStatus(4);
+            cargodao.updateById(cargo);
+
+            //自动搜索货架位置
             searchLocationInShelves(String.valueOf(orderId));
             kafkaTemplate.send("car-processing",gson.toJson(orderId));
         } else {
@@ -93,21 +102,31 @@ public class CarServiceImp implements CarService {
         System.out.println("订单对应货物id"+cargo_id);
         Cargo cargo = cargodao.selectById(cargo_id);
         String warehouse_id = cargo.getWarehouseId();
+        Integer numOfCargo = cargo.getNum();
+
         QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
         shelveswrapper.eq("warehouse_id", warehouse_id);
+
         //这里缺少一个挑选货架位置的策略
         List<ShelvesEntity> shelvesList = shelvesdao.selectList(shelveswrapper);
         Collections.reverse(shelvesList);
         ShelvesEntity newlocation = new ShelvesEntity();
 
-        //遍历列表，获得第一个没有放货物的货架位置
-        for(ShelvesEntity se:shelvesList)
-            if(Objects.isNull(se.getCargoId()) || se.getCargoId().equals("0") || se.getCargoId().equals("-1"))
-                newlocation = se;
-        System.out.println("选取的货架位置是"+newlocation.getId());
-        newlocation.setCargoId(cargo_id);
-        shelvesdao.updateById(newlocation);
+        for (int i=0;i<numOfCargo;i++) {
 
+            //遍历列表，获得第一个没有放货物的货架位置
+            for (ShelvesEntity se : shelvesList)
+                if (Objects.isNull(se.getCargoId()) || se.getCargoId().equals("0") || se.getCargoId().equals("-1"))
+                    newlocation = se;
+
+            System.out.println("选取的货架位置是" + newlocation.getId());
+            newlocation.setCargoId(cargo_id);
+            shelvesdao.updateById(newlocation);
+        }
+
+        orders order = ordersdao.selectById(order_id);
+        order.setStates("已入库");
+        ordersdao.updateById(order);
         return null;
     }
 

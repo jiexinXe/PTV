@@ -89,6 +89,10 @@ public class CargoServiceImp implements CargoService {
         int num_new = cargo.getNum()-Integer.parseInt(num);
         cargo.setNum(num_new);
         if(num_new == 0){
+            // 设置货物状态，意为货物已取出
+            cargo.setStatus(5);
+            cargoDao.updateById(cargo);
+
             cargoDao.delete(cargowrapper);
             shelve.setCargoId("0");
             shelvesdao.updateById(shelve);

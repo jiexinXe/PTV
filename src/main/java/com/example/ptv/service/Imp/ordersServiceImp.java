@@ -76,7 +76,7 @@ public class ordersServiceImp implements ordersService {
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
         cargowrapper.eq("cid",cargoId);
         Cargo cargo = cargoDao.selectOne(cargowrapper);
-        /**订单创建过程中，货物状态改为1，意为货物审核中*/
+        /**订单创建过程中，货物状态改为1，意为货物审批通过，订单审批中*/
         cargo.setStatus(1);
 
         cargoDao.updateById(cargo);
@@ -101,13 +101,6 @@ public class ordersServiceImp implements ordersService {
         /**默认订单添加必然成功*/
         ordersdao.autoAddOrder(orders);
 
-        QueryWrapper<Cargo> cargowrapper_new = new QueryWrapper<>();
-        cargowrapper.eq("cid",cargoId);
-        Cargo cargo_new = cargoDao.selectOne(cargowrapper);
-        /**订单生成完成后货物状态改为审核完成*/
-        cargo_new.setStatus(2);
-        cargoDao.updateById(cargo_new);
-
         System.out.println(orders.getId());
         System.out.println("订单创建完成，但未审批");
         kafkaTemplate.send("order-created",gson.toJson(orders.getId()));
@@ -125,7 +118,15 @@ public class ordersServiceImp implements ordersService {
     public Rest approve(String oid){
         orders orders = ordersdao.selectById(oid);
         orders.setStates("已审核");
+
+        //设置货物状态为2，意为订单审核通过，开始运输
+        String cid = ordersdao.getCargoId(oid);
+        Cargo cargo = cargoDao.selectById(cid);
+        cargo.setStatus(2);
+
+        cargoDao.updateById(cargo);
         ordersdao.updateById(orders);
+
         System.out.println("订单已经审批，准备召唤车车");
         kafkaTemplate.send("order-approved",gson.toJson(orders.getId()));
 

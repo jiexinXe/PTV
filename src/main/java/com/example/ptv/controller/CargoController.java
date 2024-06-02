@@ -82,5 +82,4 @@ public class CargoController {
         ans.put("cargo", cargo);
         return new Rest(Code.rc200.getCode(), ans, "货物信息");
     }
-
 }
