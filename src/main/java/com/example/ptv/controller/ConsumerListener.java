@@ -54,6 +54,7 @@ public class ConsumerListener {
     }
     @KafkaListener(topics = "order-approved")
     public void consumeMessageOrderCreated(ConsumerRecord<?,?> record) {
+        System.out.println("这里是车响应监听的地方");
         Optional<?> kafkaMessage = Optional.ofNullable(record.value());
         if (kafkaMessage.isPresent()) {
             Object message = kafkaMessage.get();
@@ -64,6 +65,7 @@ public class ConsumerListener {
                 orders order = orderdao.selectById(String.valueOf(orderId));
                 order.setStates("运输中");
                 orderdao.updateById(order);
+                System.out.println("这里是车");
                 carService.processOrder(orderId);
             } catch (NumberFormatException e) {
                 log.error("Failed to convert message to Integer: " + message, e);
