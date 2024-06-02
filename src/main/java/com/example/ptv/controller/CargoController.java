@@ -72,6 +72,7 @@ public class CargoController {
 //    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
     @GetMapping("/list/userid")
     public Rest getCargoListByUserId(@RequestParam("userid")String id){
+        System.out.println(cargoService.getCargoListByUserId(id));
         return cargoService.getCargoListByUserId(id);
     }
     @GetMapping("/one")
