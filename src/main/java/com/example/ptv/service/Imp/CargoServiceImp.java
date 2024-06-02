@@ -7,6 +7,7 @@ import com.example.ptv.dao.UserDao;
 import com.example.ptv.entity.Cargo;
 import com.example.ptv.entity.ShelvesEntity;
 import com.example.ptv.entity.User;
+import com.example.ptv.entity.cargo_witelocation;
 import com.example.ptv.service.CargoService;
 import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
@@ -115,6 +116,7 @@ public class CargoServiceImp implements CargoService {
     public Cargo getCargoById(String cid) {
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
         cargowrapper.eq("cid",cid);
+
         return cargoDao.selectOne(cargowrapper);
     }
 
@@ -122,19 +124,43 @@ public class CargoServiceImp implements CargoService {
     public Rest getCargoListByUserId(String userid) {
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
         User user = userdao.selectById(userid);
-        List<Cargo> cargolist;
-        //如果用户是普通用户则只能获取自己的货物信息
+        List<Cargo> cargolist = cargoDao.selectList(cargowrapper);
+
         if(user.getRole() == 3) {
             cargowrapper.eq("userid", userid);
             cargolist = cargoDao.selectList(cargowrapper);
-            Map<Object, Object> ans = new HashMap<>();
-            ans.put("CargoList", cargolist);
-            return new Rest(Code.rc200.getCode(), ans,"普通用户货物列表");
-        }
-        cargolist = cargoDao.selectList(cargowrapper);
-        Map<Object, Object> ans = new HashMap<>();
-        ans.put("CargoList", cargolist);
-        return new Rest(Code.rc200.getCode(), ans,"管理员货物列表");
+        } else
+            cargolist = cargoDao.selectList(cargowrapper);
 
+        List<cargo_witelocation> locationlist = new ArrayList<>();
+        for (Cargo c : cargolist){
+            cargo_witelocation ca = new cargo_witelocation(c);
+            ca.setShelve_location(getShelveIdOfCargo(String.valueOf(c.getCid())));
+            locationlist.add(ca);
+        }
+        //如果用户是普通用户则只能获取自己的货物信息
+
+        Map<Object, Object> ans = new HashMap<>();
+        ans.put("CargoList", locationlist);
+        return new Rest(Code.rc200.getCode(), ans,"货物信息列表");
+    }
+
+
+    @Override
+    public String getShelveIdOfCargo(String cargoid) {
+        QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
+        shelveswrapper.eq("cargo_id", cargoid);
+        List<ShelvesEntity> shelveslist = shelvesdao.selectList(shelveswrapper);
+        String shelveid = "";
+        for(ShelvesEntity se:shelveslist)
+            shelveid += "S" + se.getShelveId() + "C" + String.valueOf((Integer.parseInt(se.getNumColumn()) - 1) * 10 + Integer.parseInt(se.getNumRow())) + ";";
+
+        return shelveid;
+    }
+
+    @Override
+    public Rest getLocationInfo(String[] locations) {
+
+        return null;
     }
 }

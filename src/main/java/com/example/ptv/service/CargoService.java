@@ -10,4 +10,6 @@ public interface CargoService {
     public boolean updateCargo(Cargo cargo);
     public Cargo getCargoById(String cid);
     public Rest getCargoListByUserId(String userid);
+    public String getShelveIdOfCargo(String cargoid);
+    public Rest getLocationInfo(String[] locations);
 }
