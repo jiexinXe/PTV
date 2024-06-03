@@ -35,6 +35,7 @@ public class ShelvesServiceImpl extends ServiceImpl<ShelvesDao, ShelvesEntity> i
     @Autowired
     warehouseDao warehousedao;
 
+    // 只有该方法测试一直失败 不懂
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<ShelvesEntity> page = this.page(

@@ -18,8 +18,6 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     private userService usersService;
 
-
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -51,16 +49,10 @@ public class RegistrationServiceImpl implements RegistrationService {
         newUser.setGender(gender);
         newUser.setPhone(phone);
 
-
         usersService.save(newUser);
         System.out.println(newUser.getUsername());
 
-
-
        return true;
-
-
-
 
     }
 }
