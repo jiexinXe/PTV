@@ -45,5 +45,9 @@ public class ShelvesEntity implements Serializable {
 	 * 
 	 */
 	private String warehouseId;
+	/**
+	 *
+	 * */
+	private String states;
 
 }

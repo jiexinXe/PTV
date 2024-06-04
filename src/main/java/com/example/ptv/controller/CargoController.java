@@ -2,7 +2,9 @@ package com.example.ptv.controller;
 
 
 import com.example.ptv.entity.Cargo;
+import com.example.ptv.entity.ShelvesEntity;
 import com.example.ptv.service.CargoService;
+import com.example.ptv.service.Imp.ShelvesServiceImpl;
 import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
 import com.google.gson.Gson;
@@ -13,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +30,8 @@ import java.util.Map;
 public class CargoController {
     @Autowired
     private CargoService cargoService;
+    @Autowired
+    private ShelvesServiceImpl shelvesservice;
     @Autowired
     private KafkaTemplate<String ,Object> kafkaTemplate;
     @Autowired
@@ -59,11 +64,8 @@ public class CargoController {
      * 提取货物的接口
      * */
     @DeleteMapping("/delete")
-    public Rest deleteCargo(@RequestParam("id") String cid, @RequestParam("num")String num){
-        String message = cid+";"+num;
-        System.out.println("提取货物开始");
-//        kafkaTemplate.send("cargo-remove", gson.toJson(message));
-        cargoService.deleteCargo(cid,num);
+    public Rest deleteCargo(@RequestParam("warehouse_id")String warehouse_id, @RequestParam("shelve_id")String shelve_id, @RequestParam("row")String row, @RequestParam("column")String column) {
+        cargoService.deleteCargo(warehouse_id, shelve_id, row, column);
         return new Rest(Code.rc200.getCode(), "删除成功");
     }
     /**
@@ -82,5 +84,11 @@ public class CargoController {
         Map<Object, Object> ans = new HashMap<>();
         ans.put("cargo", cargo);
         return new Rest(Code.rc200.getCode(), ans, "货物信息");
+    }
+
+    @PostMapping("/remove")
+    public Rest removeCargo(@RequestParam("username")String username, @RequestParam("cid")String cid, @RequestParam("num")String num){
+
+        return cargoService.readyToRemove(username, cid, num);
     }
 }

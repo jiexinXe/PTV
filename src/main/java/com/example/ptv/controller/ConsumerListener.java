@@ -100,7 +100,7 @@ public class ConsumerListener {
                 String cid = strings[0];
                 String num = strings[1];
                 System.out.println("货物"+cid+"数量"+num);
-                cargoservice.deleteCargo(cid, num);
+//                cargoservice.deleteCargo(cid, num);
             } catch (NumberFormatException e) {
                 log.error("Failed to convert message to Integer: " + message, e);
             }

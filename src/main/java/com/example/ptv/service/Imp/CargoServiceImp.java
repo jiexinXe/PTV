@@ -13,6 +13,7 @@ import com.example.ptv.utils.Code;
 import com.example.ptv.utils.Rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.ibatis.jdbc.Null;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -70,38 +71,26 @@ public class CargoServiceImp implements CargoService {
      * 提取货物
      * */
     @Override
-    public Rest deleteCargo(String cid, String num) {
-        QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
-        cargowrapper.eq("cid", cid);
-        Cargo cargo = cargoDao.selectOne(cargowrapper);
+    public Rest deleteCargo(String warehouse_id, String shelve_id, String row, String column) {
+        QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
+        shelveswrapper.eq("warehouse_id", warehouse_id)
+                .eq("shelve_id", shelve_id)
+                .eq("num_row", row)
+                .eq("num_column", column);
+        ShelvesEntity shelves = shelvesdao.selectOne(shelveswrapper);
+        String cargo_id = shelves.getCargoId();
+        Cargo cargo = cargoDao.selectById(cargo_id);
 
-        QueryWrapper<ShelvesEntity> shelvewrapper = new QueryWrapper<>();
-        shelvewrapper.eq("cargo_id", cid);
-        ShelvesEntity shelve = shelvesdao.selectOne(shelvewrapper);
+        cargo.setNum(cargo.getNum() - 1);
+        if (cargo.getNum() == 0)
+            cargoDao.deleteById(cargo_id);
+        cargoDao.updateById(cargo);
 
-//        carserviceimp.processCargo(cid, String.valueOf(shelve.getId()));
+        shelves.setCargoId("0");
+        shelves.setStates("0");
+        shelvesdao.updateById(shelves);
 
-        if(cargo.getNum() < Integer.valueOf(num))
-            return new Rest(Code.rc400.getCode(),"余量不足");
-
-        System.out.println(cargo);
-
-
-        int num_new = cargo.getNum()-Integer.parseInt(num);
-        cargo.setNum(num_new);
-        if(num_new == 0){
-            // 设置货物状态，意为货物已取出
-            cargo.setStatus(5);
-            cargoDao.updateById(cargo);
-
-            cargoDao.delete(cargowrapper);
-            shelve.setCargoId("0");
-            shelvesdao.updateById(shelve);
-            return new Rest(Code.rc200.getCode(), "成功提取，余量已用完");
-        }
-
-        cargoDao.update(cargo,cargowrapper);
-        return new Rest(Code.rc200.getCode(),"成功提取");
+        return new Rest(Code.rc200.getCode(), "提取成功");
     }
 
     @Override
@@ -162,5 +151,29 @@ public class CargoServiceImp implements CargoService {
     public Rest getLocationInfo(String[] locations) {
 
         return null;
+    }
+
+    @Override
+    public Rest readyToRemove(String username, String cid, String num) {
+        QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
+        shelveswrapper.eq("cargo_id", cid);
+        List<ShelvesEntity> shelves = shelvesdao.selectList(shelveswrapper);
+        Collections.reverse(shelves);
+
+        Cargo cargo = cargoDao.selectById(cid);
+        cargo.setStatus(5);
+        cargoDao.updateById(cargo);
+
+        if(shelves.size() < Integer.parseInt(num))
+            num = String.valueOf(shelves.size());
+
+
+        for (int i = 0;i<Integer.parseInt(num);i++){
+            ShelvesEntity se = shelves.get(i);
+            se.setStates(username);
+            shelvesdao.updateById(se);
+        }
+
+        return new Rest(Code.rc200.getCode(), "提取指令已发出");
     }
 }
