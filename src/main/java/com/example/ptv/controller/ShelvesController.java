@@ -98,6 +98,7 @@ public class ShelvesController {
      * */
     @GetMapping("/info")
     public Rest getShelvesOfWarehouse(@RequestParam("warehouse_id")String warehouse_id,@RequestParam("shelve_id")String shelve_id){
+        System.out.println("调用/info方法");
         System.out.println(shelvesService.getInfo(warehouse_id, shelve_id));
         return shelvesService.getInfo(warehouse_id, shelve_id);
     }
