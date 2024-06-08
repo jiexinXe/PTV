@@ -165,7 +165,7 @@ public class CargoServiceImp implements CargoService {
         cargoDao.updateById(cargo);
 
         if(shelves.size() < Integer.parseInt(num))
-            num = String.valueOf(shelves.size());
+            return new Rest(Code.rc400.getCode(), "库存数量不够");
 
 
         for (int i = 0;i<Integer.parseInt(num);i++){
