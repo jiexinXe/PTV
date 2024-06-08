@@ -158,6 +158,7 @@ public class CarServiceImp implements CarService {
             if (success) {
                 //运输完成
                 cargo.setStatus(4);
+                cargodao.updateById(cargo);
                 allShelvesFull = false;
                 break; // 成功存储后退出循环
             }
