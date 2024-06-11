@@ -57,6 +57,7 @@ public class CarServiceImp implements CarService {
             Cargo cargo = cargodao.selectById(cargo_id);
 
 
+
             List<Car> cars = null;
             int attempts = 0;
 
@@ -106,6 +107,9 @@ public class CarServiceImp implements CarService {
                 }
                 carDao.updateCarStatusAndTask(firstCar.getId(), 0, "无");
                 System.out.println("车车" + firstCar.getId() + "处理完毕！");
+                orders order = ordersdao.selectById(orderId);
+                order.setStates("已入库");
+                ordersdao.updateById(order);
                 kafkaTemplate.send("car-processing", gson.toJson(orderId));
             } else {
                 System.out.println("没有可用的车来处理订单: " + orderId);
