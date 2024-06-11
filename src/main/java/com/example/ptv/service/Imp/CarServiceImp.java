@@ -203,7 +203,7 @@ public class CarServiceImp implements CarService {
                 break;
             }
             try {
-                Thread.sleep(3000); // 等待5秒
+                Thread.sleep(8000); // 等待8秒
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 恢复中断状态
                 break; // 在异常情况下退出循环
@@ -215,7 +215,7 @@ public class CarServiceImp implements CarService {
             carDao.updateCarStatusAndTask(firstCar.getId(), 1, "当前正在前往货架"+sid);
             System.out.println("车车"+firstCar.getId()+"来咯！ "+"正在前往货架: "+sid);
             try {
-                Thread.sleep(3000); // 等待5秒
+                Thread.sleep(8000); // 等待8秒
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 恢复中断状态
             }
