@@ -1,6 +1,7 @@
 package com.example.ptv.service.Imp;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.ptv.config.MyWebSocketHandler;
 import com.example.ptv.dao.CarDao;
 import com.example.ptv.dao.CargoDao;
 import com.example.ptv.dao.ShelvesDao;
@@ -11,9 +12,10 @@ import com.example.ptv.utils.Rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -31,32 +33,26 @@ public class CarServiceImp implements CarService {
     CargoDao cargodao;
 
     @Autowired
-    private KafkaTemplate<String ,Object> kafkaTemplate;
+    private MyWebSocketHandler webSocketHandler; // 引入 MyWebSocketHandler
 
     @Autowired
     private Gson gson = new GsonBuilder().create();
+
     @Override
     public List<Car> getAllCars() {
         return carDao.selectList(null); // 获取所有车辆信息
     }
-
 
     private final Object lock1 = new Object();
     private final Object lock2 = new Object();
     private final Object lock3 = new Object();
     private final Object lock4 = new Object();
 
-
-    //获取队列中的orderId，小车处理过程用sleep代替
-    //选择当前为空闲状态的小车，status置为1，代表忙碌中，current_task设置为orderId
-    //处理完后，向消息队列发送orderId
     @Override
     public void processOrder(Integer orderId) {
         new Thread(() -> {
             String cargo_id = ordersdao.getCargoId(orderId.toString());
             Cargo cargo = cargodao.selectById(cargo_id);
-
-
 
             List<Car> cars = null;
             int attempts = 0;
@@ -110,7 +106,13 @@ public class CarServiceImp implements CarService {
                 orders order = ordersdao.selectById(orderId);
                 order.setStates("已入库");
                 ordersdao.updateById(order);
-                kafkaTemplate.send("car-processing", gson.toJson(orderId));
+
+                // 在订单处理完成后，通过 WebSocket 发送消息
+                try {
+                    webSocketHandler.sendMessageToAll("运输成功，订单ID：" + orderId);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else {
                 System.out.println("没有可用的车来处理订单: " + orderId);
             }

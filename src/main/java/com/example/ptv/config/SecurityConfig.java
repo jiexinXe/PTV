@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/kafkaProducer/**",
             "/kafkaConsumer/**",
             "car/test",
+            "/websocket/**",
     };
     @Bean
     public PasswordEncoder passwordEncoder() {
