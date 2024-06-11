@@ -170,15 +170,16 @@ public class CarServiceImp implements CarService {
     private boolean storeCargoInShelf(String warehouse_id, int shelveId, String cargo_id, int num) {
         QueryWrapper<ShelvesEntity> shelveswrapper = new QueryWrapper<>();
         shelveswrapper.eq("warehouse_id", warehouse_id)
-                .eq("shelve_id", String.valueOf(shelveId))
-                .isNull("cargo_id");
+                .eq("shelve_id", String.valueOf(shelveId));
         List<ShelvesEntity> shelvesList = shelvesdao.selectList(shelveswrapper);
         System.out.println("检查货架 " + shelveId);
         // 遍历当前货架
         for (ShelvesEntity shelf : shelvesList) {
-            shelf.setCargoId(cargo_id);
-            shelvesdao.updateById(shelf);
-            num--;
+            if (Objects.equals(shelf.getCargoId(), "0") || Objects.isNull(shelf.getCargoId())){
+                shelf.setCargoId(cargo_id);
+                shelvesdao.updateById(shelf);
+                num--;
+            }
             // 如果货物数量为0，则返回
             if (num == 0) {
                 System.out.println("货物已全部存储");
@@ -203,7 +204,7 @@ public class CarServiceImp implements CarService {
                 break;
             }
             try {
-                Thread.sleep(8000); // 等待8秒
+                Thread.sleep(10000); // 等待8秒
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 恢复中断状态
                 break; // 在异常情况下退出循环
@@ -215,7 +216,7 @@ public class CarServiceImp implements CarService {
             carDao.updateCarStatusAndTask(firstCar.getId(), 1, "当前正在前往货架"+sid);
             System.out.println("车车"+firstCar.getId()+"来咯！ "+"正在前往货架: "+sid);
             try {
-                Thread.sleep(8000); // 等待8秒
+                Thread.sleep(10000); // 等待8秒
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 恢复中断状态
             }
