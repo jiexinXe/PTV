@@ -1,4 +1,5 @@
 package com.example.ptv.entity;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,17 +10,11 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.Date;
 
-/**
- * 该实体类对应数据库中的数据货物表
- * */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("cargo")
-public class Cargo {
-
+public class cargo_witelocation {
     //货物ID
-    @TableId(type = IdType.AUTO)
     Integer cid;
     //货物所在仓库的id
     String warehouseId;
@@ -37,15 +32,26 @@ public class Cargo {
     Date enterTime;
     //入库位置
     String location;
-//<<<<<<< .merge_file_UQWEf4
+    //<<<<<<< .merge_file_UQWEf4
     Integer userid;
 
     //当前货物的状态
     //未审核：0 ，已审核：1 ， 已上架：2
     Integer status;
-//=======
-    //存放该货物的用户的id
-//    Integer userid;
-//
-//>>>>>>> .merge_file_qji91F
+    //货物的货架位置
+    String shelve_location;
+
+    public  cargo_witelocation (Cargo cargo){
+        this.cid = cargo.getCid();
+        this.category = cargo.getCategory();
+        this.num = cargo.getNum();
+        this.warehouseId = cargo.getWarehouseId();
+        this.name = cargo.getName();
+        this.price = cargo.getPrice();
+        this.supplier = cargo.getSupplier();
+        this.enterTime = cargo.getEnterTime();
+        this.location = cargo.getLocation();
+        this.userid = cargo.getUserid();
+        this.status = cargo.getStatus();
+    }
 }

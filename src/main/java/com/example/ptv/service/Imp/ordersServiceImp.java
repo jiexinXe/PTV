@@ -4,8 +4,10 @@ package com.example.ptv.service.Imp;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.ptv.dao.CargoDao;
 import com.example.ptv.dao.itemDao;
+import com.example.ptv.dao.orderinfoDao;
 import com.example.ptv.dao.ordersDao;
 import com.example.ptv.entity.Cargo;
+import com.example.ptv.entity.order_use;
 import com.example.ptv.entity.orderInfo;
 import com.example.ptv.entity.orders;
 import com.example.ptv.service.ordersService;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +40,8 @@ public class ordersServiceImp implements ordersService {
     ordersDao ordersdao;
     @Autowired
     private CargoDao cargoDao;
+    @Autowired
+    private orderinfoDao infodao;
     @Autowired
     private KafkaTemplate<String ,Object> kafkaTemplate;
     @Autowired
@@ -66,11 +71,16 @@ public class ordersServiceImp implements ordersService {
      * @param cargoId
      */
     @Override
-    public void autoAddOrder(Integer cargoId){
+    public void autoAddOrder(Integer cargoId ){
 
         QueryWrapper<Cargo> cargowrapper = new QueryWrapper<>();
         cargowrapper.eq("cid",cargoId);
         Cargo cargo = cargoDao.selectOne(cargowrapper);
+        /**订单创建过程中，货物状态改为1，意为货物审批通过，订单审批中*/
+        cargo.setStatus(1);
+
+        cargoDao.updateById(cargo);
+
         orderInfo orderInfo = new orderInfo();
         orderInfo.setItemId(cargo.getCid());
         orderInfo.setNumOfItem( cargo.getNum());
@@ -85,13 +95,41 @@ public class ordersServiceImp implements ordersService {
         String type="do not why";
         orders orders = new orders();
         orders.setOinfoId(orderInfo.getId());
-        orders.setStates("已完成");
+        orders.setStates("待审批");
 
         /**最终将info_id及其他信息放入orders表*/
+        /**默认订单添加必然成功*/
         ordersdao.autoAddOrder(orders);
 
         System.out.println(orders.getId());
+        System.out.println("订单创建完成，但未审批");
         kafkaTemplate.send("order-created",gson.toJson(orders.getId()));
+
         return ;
+    }
+
+    @Override
+    public Rest getOrdersByuserid(String userid){
+        List<order_use> ordersList = ordersdao.getOrdersByUserid(userid);
+        return new Rest(Code.rc200.getCode(), ordersList, "用户所有订单");
+    }
+
+    @Override
+    public Rest approve(String oid){
+        orders orders = ordersdao.selectById(oid);
+        orders.setStates("已审核");
+
+        //设置货物状态为2，意为订单审核通过，开始运输
+        String cid = ordersdao.getCargoId(oid);
+        Cargo cargo = cargoDao.selectById(cid);
+        cargo.setStatus(2);
+
+        cargoDao.updateById(cargo);
+        ordersdao.updateById(orders);
+
+        System.out.println("订单已经审批，准备召唤车车");
+        kafkaTemplate.send("order-approved",gson.toJson(orders.getId()));
+
+        return new Rest(Code.rc200.getCode(), "审批完成");
     }
 }

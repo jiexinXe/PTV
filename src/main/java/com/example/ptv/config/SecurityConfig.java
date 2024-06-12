@@ -38,16 +38,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+
+    //张凯歌大王在这里加了点东西
     public static final String[] URL_WHITELIST = {
             "/webjars/**",
             "/favicon.ico",
-
             "/captcha",
             "/login",
             "/logout",
             "/register",
             "/kafkaProducer/**",
             "/kafkaConsumer/**",
+            "car/test",
+            "/websocket/**",
     };
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -61,13 +64,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        System.out.println("可惜不可惜忘了爱自己");
         http.cors().and().csrf().disable()
                 .formLogin()
                     .loginProcessingUrl("/login")
                     .failureHandler(loginFailureHandler)
                     .successHandler(loginSuccessHandler)
-
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
@@ -75,23 +76,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                     .antMatchers(URL_WHITELIST).permitAll() //白名单
                     .anyRequest().authenticated()
-
-
                 // 不会创建 session
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
                 // 异常处理器
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
-
                 // 配置自定义的过滤器
                 .and()
-
-
         ;
     }
 }

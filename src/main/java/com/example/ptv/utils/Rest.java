@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Rest {
-    @JsonProperty("Code")
-    private Integer Code;
+    @JsonProperty("code")
+    private Integer code;
     private Object data;
     @JsonProperty("msg")
     private String msg;
 
     public Rest(Integer code,String msg){
-        this.Code = code;
+        this.code = code;
         this.msg = msg;
     }
 

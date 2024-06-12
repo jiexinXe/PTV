@@ -16,6 +16,6 @@ public class warehouse {
 
     Integer id;
     String type;
-    Double maxContent;
-    Double nowContent;
+    String maxContent;
+    String nowContent;
 }
